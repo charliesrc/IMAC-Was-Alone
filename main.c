@@ -12,6 +12,8 @@
 #include <math.h>
 #include <time.h>
 
+#include "personnage.c"
+
 
 static const unsigned int BIT_PER_PIXEL = 32;
 static const Uint32 FRAMERATE_MILLISECONDS = 1000 / 60;
@@ -30,23 +32,35 @@ void drawRepere(){
   glEnd();
 }
 
-void drawSquare(){
+void drawFloor(){
   glColor3ub(0,0,0);
 
   glBegin(GL_QUADS);
 
-  glVertex2f(-4, 0);
-  glVertex2f(4,0);
-  glVertex2f(4,-2);
-  glVertex2f(-4,-2);
+  glVertex2f(-40, 0);
+  glVertex2f(40,0);
+  glVertex2f(40,-20);
+  glVertex2f(-40,-20);
   glEnd();
+}
+
+void drawPersonnage(Personnage* newPerso){
+
+  glBegin(GL_QUADS);
+
+  glVertex2f(newPerso->x, newPerso->y);
+  glVertex2f(newPerso->x + newPerso->largeur, newPerso->y);
+  glVertex2f(newPerso->x + newPerso->largeur, newPerso->y + newPerso->hauteur);
+  glVertex2f(newPerso->x, newPerso->y + newPerso->hauteur);
+  glEnd();
+
 }
 
 void reshape(int winWidth, int winHeight) {
   glViewport(0, 0, winWidth, winHeight);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  gluOrtho2D(-4., 4., -2*(winHeight/(float)winWidth), 6*(winHeight/(float)winWidth));
+  gluOrtho2D(-40., 40., -20*(winHeight/(float)winWidth), 60*(winHeight/(float)winWidth));
 }
 
 void setVideoMode(int winWidth, int winHeight) {
@@ -73,6 +87,9 @@ int main(int argc, char** argv) {
 
   SDL_WM_SetCaption("IMAC Was Alone", NULL);
 
+  Personnage* newPerso = createPersonnage(10, 6, 0, 0, 20, 0, 3);
+
+
   // PARTIE AJOUT SON
   // if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 1024) == -1) //Initialisation de l'API Mixer
   //  {
@@ -89,6 +106,8 @@ int main(int argc, char** argv) {
   //   }
   //  Mix_PlayMusic(musique, -1); //Jouer infiniment la musique
 
+
+
   int loop = 1;
   while(loop) {
 
@@ -102,7 +121,9 @@ int main(int argc, char** argv) {
 
     glLoadIdentity();
     drawRepere();
-    drawSquare();
+    drawFloor();
+    glColor3ub(255,0,0);
+    drawPersonnage(newPerso);
 
     SDL_GL_SwapBuffers();
     /* ****** */
@@ -163,8 +184,8 @@ int main(int argc, char** argv) {
     }
   }
 
-  Mix_FreeMusic(musique); //Libération de la musique
-  Mix_CloseAudio(); //Fermeture de l'API
+  // Mix_FreeMusic(musique); Libération de la musique
+  // Mix_CloseAudio(); Fermeture de l'API
   SDL_Quit();
 
   return EXIT_SUCCESS;
