@@ -77,6 +77,9 @@ void setVideoMode(int winWidth, int winHeight) {
 
 int main(int argc, char** argv) {
 
+  int rightPressed = 0;
+  int leftPressed = 0;
+  float acceleration = 0.0;
 
   if(-1 == SDL_Init(SDL_INIT_VIDEO)) {
     fprintf(stderr, "Impossible d'initialiser la SDL. Fin du programme.\n");
@@ -106,8 +109,6 @@ int main(int argc, char** argv) {
   //   }
   //  Mix_PlayMusic(musique, -1); //Jouer infiniment la musique
 
-
-
   int loop = 1;
   while(loop) {
 
@@ -128,6 +129,24 @@ int main(int argc, char** argv) {
     SDL_GL_SwapBuffers();
     /* ****** */
 
+    if(rightPressed == 1){
+      if(acceleration < 0.6){
+        acceleration += 0.1;
+      }
+      newPerso->x += (0.5 + acceleration);
+    }
+
+    if(leftPressed == 1){
+      if(acceleration < 0.6){
+        acceleration += 0.1;
+      }
+      newPerso->x -= (0.5 + acceleration);
+    }
+
+    printf("%f\n", acceleration);
+    printf("%f\n", newPerso->x);
+
+
     SDL_Event e;
     while(SDL_PollEvent(&e)) {
       if(e.type == SDL_QUIT) {
@@ -136,7 +155,7 @@ int main(int argc, char** argv) {
       }
 
       switch(e.type) {
-        case SDL_MOUSEBUTTONUP:
+        case SDL_MOUSEBUTTONUP :
         if(e.button.button == SDL_BUTTON_RIGHT) {
 
         }
@@ -146,28 +165,53 @@ int main(int argc, char** argv) {
 
           break;
 
-        case SDL_MOUSEBUTTONDOWN:
+        case SDL_MOUSEBUTTONDOWN :
           if(e.button.button == SDL_BUTTON_RIGHT){
 
           }
           break;
 
-        case SDL_MOUSEMOTION:
+        case SDL_MOUSEMOTION :
 
           break;
 
-        case SDL_VIDEORESIZE:
+        case SDL_VIDEORESIZE :
           windowWidth  = e.resize.w;
           windowHeight = e.resize.h;
           setVideoMode(windowWidth,windowHeight);
           break;
 
-        case SDL_KEYDOWN:
+        case SDL_KEYUP :
+          switch (e.key.keysym.sym) {
+            case SDLK_RIGHT :
+              rightPressed = 0;
+              acceleration = 0;
+              break;
+
+            case SDLK_LEFT :
+              leftPressed = 0;
+              acceleration = 0;
+              break;
+
+            default : break;
+          }
+          break;
+
+        case SDL_KEYDOWN :
           switch(e.key.keysym.sym){
+            case SDLK_RIGHT :
+              rightPressed = 1;
+              break;
+
+            case SDLK_LEFT :
+              leftPressed = 1;
+              break;
+
             case 'q' :
             case SDLK_ESCAPE :
               loop = 0;
               break;
+
             default : break;
           }
           break;

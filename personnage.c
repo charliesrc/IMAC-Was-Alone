@@ -4,17 +4,17 @@
 typedef struct Personnage {
   int hauteur;
   int largeur;
-  int x;
-  int y;
-  int xfin;
-  int yfin;
-  int puissance;
+  float x;
+  float y;
+  float xfin;
+  float yfin;
+  float puissance;
 } Personnage;
 
 /******************************************************************************
  2- INITIALISATION DU PERSONNAGE
  ******************************************************************************/
-Personnage* createPersonnage(int hauteur, int largeur, int x, int y, int xfin, int yfin, int puissance){
+Personnage* createPersonnage(int hauteur, int largeur, float x, float y, float xfin, float yfin, float puissance){
 
   Personnage* perso = calloc(1, sizeof(Personnage));
   perso->hauteur = hauteur;
