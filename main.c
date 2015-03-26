@@ -79,7 +79,9 @@ int main(int argc, char** argv) {
 
   int rightPressed = 0;
   int leftPressed = 0;
+  int upPressed = 0;
   float acceleration = 0.0;
+  float gravite = 0;
 
   if(-1 == SDL_Init(SDL_INIT_VIDEO)) {
     fprintf(stderr, "Impossible d'initialiser la SDL. Fin du programme.\n");
@@ -90,7 +92,7 @@ int main(int argc, char** argv) {
 
   SDL_WM_SetCaption("IMAC Was Alone", NULL);
 
-  Personnage* newPerso = createPersonnage(10, 6, 0, 0, 20, 0, 3);
+  Personnage* newPerso = createPersonnage(10, 6, 0, 0, 20, 0, 15);
 
 
   // PARTIE AJOUT SON
@@ -129,6 +131,45 @@ int main(int argc, char** argv) {
     SDL_GL_SwapBuffers();
     /* ****** */
 
+    if(upPressed == 1){
+      /*acceleration = gravite * acceleration;
+      if(acceleration > 0.6){
+        acceleration -= 0.1;
+      }
+      if(gravite >= 0 ){
+        gravite -= 0.1;
+      } else{
+        gravite += 0.1;
+      }*/
+
+
+        /*
+// calcul de la gravité
+  if (perso._y>=300) {
+    perso._y = 300;
+    gravite = -k(h)*10;
+  } else {
+    gravite++;
+  }
+ 
+  // déplacements           
+  if (!vise)perso._x += vitesse*sens;// horizontal
+  perso._y += gravite;// vertical
+  Si le héros est sur le sol alors si on appuie sur la touche « haut » la gravité est égale à -10.
+Si le héros est sur le sol alors si on n’appuie pas sur la touche « haut » la gravité est égale à 0.
+Si le héros n’est pas sur le sol alors la gravité s’incrémente de 1.
+
+        */
+      if(newPerso->y <= newPerso->puissance){
+            gravite += 0.1;
+            acceleration -= 0.1;
+      } else {
+            gravite -= 0.1;
+            acceleration += 0.1;
+      }
+      newPerso->y += (0.5 * (gravite) - acceleration);
+    }
+
     if(rightPressed == 1){
       if(acceleration < 0.6){
         acceleration += 0.1;
@@ -143,9 +184,11 @@ int main(int argc, char** argv) {
       newPerso->x -= (0.5 + acceleration);
     }
 
+/*
+    DEBUG
     printf("%f\n", acceleration);
     printf("%f\n", newPerso->x);
-
+*/
 
     SDL_Event e;
     while(SDL_PollEvent(&e)) {
@@ -154,7 +197,57 @@ int main(int argc, char** argv) {
         break;
       }
 
+
+
       switch(e.type) {
+
+        case SDL_KEYUP :
+
+          switch (e.key.keysym.sym) {
+
+            case SDLK_UP :
+              upPressed = 0;
+              acceleration = 0;
+              break;
+
+            case SDLK_RIGHT :
+              rightPressed = 0;
+              acceleration = 0;
+              break;
+
+            case SDLK_LEFT :
+              leftPressed = 0;
+              acceleration = 0;
+              break;
+
+            default : break;
+          }
+          break;
+
+        case SDL_KEYDOWN :
+
+          switch(e.key.keysym.sym){
+            case SDLK_UP :
+              upPressed = 1;
+              break;
+
+            case SDLK_RIGHT :
+              rightPressed = 1;
+              break;
+
+            case SDLK_LEFT :
+              leftPressed = 1;
+              break;
+
+            case 'q' :
+            case SDLK_ESCAPE :
+              loop = 0;
+              break;
+
+            default : break;
+          }
+          break;
+
         case SDL_MOUSEBUTTONUP :
         if(e.button.button == SDL_BUTTON_RIGHT) {
 
@@ -179,41 +272,6 @@ int main(int argc, char** argv) {
           windowWidth  = e.resize.w;
           windowHeight = e.resize.h;
           setVideoMode(windowWidth,windowHeight);
-          break;
-
-        case SDL_KEYUP :
-          switch (e.key.keysym.sym) {
-            case SDLK_RIGHT :
-              rightPressed = 0;
-              acceleration = 0;
-              break;
-
-            case SDLK_LEFT :
-              leftPressed = 0;
-              acceleration = 0;
-              break;
-
-            default : break;
-          }
-          break;
-
-        case SDL_KEYDOWN :
-          switch(e.key.keysym.sym){
-            case SDLK_RIGHT :
-              rightPressed = 1;
-              break;
-
-            case SDLK_LEFT :
-              leftPressed = 1;
-              break;
-
-            case 'q' :
-            case SDLK_ESCAPE :
-              loop = 0;
-              break;
-
-            default : break;
-          }
           break;
 
         default:
