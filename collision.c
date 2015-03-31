@@ -1,9 +1,13 @@
 int collisionBas(Personnage* newPerso, Obstacle* newObs){
 
-  if(newPerso->y == newObs->y + newObs->hauteur){
-    return 1;
+  if(newPerso->x + newPerso->largeur > newObs->x && newPerso->x < newObs->x + newObs->largeur){
+    if(newPerso->y <= newObs->hauteur){
+      return 1;
+    }
+    else{
+      return 0;
+    }
   }
 
   return 0;
-  // && newPerso->x > newObs->x && newPerso->x < newObs->x + newObs->largeur
 }

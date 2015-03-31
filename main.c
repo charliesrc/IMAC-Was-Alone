@@ -156,26 +156,29 @@ int main(int argc, char** argv) {
     SDL_GL_SwapBuffers();
     /* ****** */
 
-    colBas = collisionBas(newPerso, newObs);
-
     printf("%d\n", colBas);
+    printf("%f\n", newPerso->y);
+
+    if (colBas == 1) {
+      newPerso->y = newObs->hauteur;
+    }
+
 
     /* Saut */
-
     if(upPressed == 1){
 
       newPerso->y += saut;
       saut -= gravite;
 
-      if(colBas == 1){
-        newPerso->y = newObs->y;
-        upPressed = 0;
-        saut = newPerso->puissance;
+      if (colBas == 1) {
+        newPerso->y = newObs->hauteur;
       }
 
-      if (newPerso->y < 0){
+      if (newPerso->y <= 0){
         upPressed = 0;
         saut = newPerso->puissance;
+        colBas = 0;
+        newPerso->y = 0;
       }
 
     }
@@ -196,6 +199,10 @@ int main(int argc, char** argv) {
       newPerso->x -= (0.5 + acceleration);
     }
 
+    /* Gravité */
+    if (newPerso->y > 0) {
+      newPerso->y = newPerso->y - gravite;
+    }
 
 /*
     DEBUG
@@ -210,8 +217,6 @@ int main(int argc, char** argv) {
         break;
       }
 
-
-
       switch(e.type) {
 
         case SDL_KEYUP :
@@ -220,16 +225,21 @@ int main(int argc, char** argv) {
 
             case SDLK_UP :
               acceleration = 0;
+              colBas = collisionBas(newPerso, newObs);
               break;
 
             case SDLK_RIGHT :
               rightPressed = 0;
               acceleration = 0;
+              colBas = collisionBas(newPerso, newObs);
+
               break;
 
             case SDLK_LEFT :
               leftPressed = 0;
               acceleration = 0;
+              colBas = collisionBas(newPerso, newObs);
+
               break;
 
             default : break;
@@ -241,14 +251,17 @@ int main(int argc, char** argv) {
           switch(e.key.keysym.sym){
             case SDLK_UP :
               upPressed = 1;
+              colBas = collisionBas(newPerso, newObs);
               break;
 
             case SDLK_RIGHT :
               rightPressed = 1;
+              colBas = collisionBas(newPerso, newObs);
               break;
 
             case SDLK_LEFT :
               leftPressed = 1;
+              colBas = collisionBas(newPerso, newObs);
               break;
 
             case 'q' :
