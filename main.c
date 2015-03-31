@@ -13,6 +13,9 @@
 #include <time.h>
 
 #include "personnage.c"
+#include "obstacle.c"
+#include "collision.c"
+
 
 
 static const unsigned int BIT_PER_PIXEL = 32;
@@ -56,6 +59,18 @@ void drawPersonnage(Personnage* newPerso){
 
 }
 
+void drawObstacle(Obstacle* newObs){
+
+  glBegin(GL_QUADS);
+
+  glVertex2f(newObs->x, newObs->y);
+  glVertex2f(newObs->x + newObs->largeur, newObs->y);
+  glVertex2f(newObs->x + newObs->largeur, newObs->y + newObs->hauteur);
+  glVertex2f(newObs->x, newObs->y + newObs->hauteur);
+  glEnd();
+
+}
+
 void reshape(int winWidth, int winHeight) {
   glViewport(0, 0, winWidth, winHeight);
   glMatrixMode(GL_PROJECTION);
@@ -81,7 +96,11 @@ int main(int argc, char** argv) {
   int leftPressed = 0;
   int upPressed = 0;
   float acceleration = 0.0;
-  float gravite = 0;
+  float gravite = 0.2;
+  int colBas = 0;
+  int colHaut = 0;
+  int colGauche = 0;
+  int colDroite = 0;
 
   if(-1 == SDL_Init(SDL_INIT_VIDEO)) {
     fprintf(stderr, "Impossible d'initialiser la SDL. Fin du programme.\n");
@@ -92,7 +111,10 @@ int main(int argc, char** argv) {
 
   SDL_WM_SetCaption("IMAC Was Alone", NULL);
 
-  Personnage* newPerso = createPersonnage(10, 6, 0, 0, 20, 0, 15);
+  Personnage* newPerso = createPersonnage(10, 2, 0, 0, 20, 0, 3);
+  float saut = newPerso->puissance;
+
+  Obstacle* newObs = createObstacle(10, 40, 20, 0);
 
 
   // PARTIE AJOUT SON
@@ -128,47 +150,37 @@ int main(int argc, char** argv) {
     glColor3ub(255,0,0);
     drawPersonnage(newPerso);
 
+    glColor3ub(0,0,0);
+    drawObstacle(newObs);
+
     SDL_GL_SwapBuffers();
     /* ****** */
 
+    colBas = collisionBas(newPerso, newObs);
+
+    printf("%d\n", colBas);
+
+    /* Saut */
+
     if(upPressed == 1){
-      /*acceleration = gravite * acceleration;
-      if(acceleration > 0.6){
-        acceleration -= 0.1;
+
+      newPerso->y += saut;
+      saut -= gravite;
+
+      if(colBas == 1){
+        newPerso->y = newObs->y;
+        upPressed = 0;
+        saut = newPerso->puissance;
       }
-      if(gravite >= 0 ){
-        gravite -= 0.1;
-      } else{
-        gravite += 0.1;
-      }*/
 
-
-        /*
-// calcul de la gravité
-  if (perso._y>=300) {
-    perso._y = 300;
-    gravite = -k(h)*10;
-  } else {
-    gravite++;
-  }
- 
-  // déplacements           
-  if (!vise)perso._x += vitesse*sens;// horizontal
-  perso._y += gravite;// vertical
-  Si le héros est sur le sol alors si on appuie sur la touche « haut » la gravité est égale à -10.
-Si le héros est sur le sol alors si on n’appuie pas sur la touche « haut » la gravité est égale à 0.
-Si le héros n’est pas sur le sol alors la gravité s’incrémente de 1.
-
-        */
-      if(newPerso->y <= newPerso->puissance){
-            gravite += 0.1;
-            acceleration -= 0.1;
-      } else {
-            gravite -= 0.1;
-            acceleration += 0.1;
+      if (newPerso->y < 0){
+        upPressed = 0;
+        saut = newPerso->puissance;
       }
-      newPerso->y += (0.5 * (gravite) - acceleration);
+
     }
+
+    /* Déplacement */
 
     if(rightPressed == 1){
       if(acceleration < 0.6){
@@ -183,6 +195,7 @@ Si le héros n’est pas sur le sol alors la gravité s’incrémente de 1.
       }
       newPerso->x -= (0.5 + acceleration);
     }
+
 
 /*
     DEBUG
@@ -206,7 +219,6 @@ Si le héros n’est pas sur le sol alors la gravité s’incrémente de 1.
           switch (e.key.keysym.sym) {
 
             case SDLK_UP :
-              upPressed = 0;
               acceleration = 0;
               break;
 
