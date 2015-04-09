@@ -11,15 +11,116 @@
 #include <stdio.h>
 #include <math.h>
 #include <time.h>
+#include <string.h>
 
-#include "personnage.c"
-#include "obstacle.c"
+/*#include "rectangle.h"*/
 #include "collision.c"
-
 
 
 static const unsigned int BIT_PER_PIXEL = 32;
 static const Uint32 FRAMERATE_MILLISECONDS = 1000 / 60;
+
+
+
+
+
+
+
+
+
+/******************************************************************************
+ 1- DEFINITION DE LA STRUCTURE
+ ******************************************************************************/
+typedef struct Rectangle {
+  int hauteur;
+  int largeur;
+  float x;
+  float y;
+  float xfin;
+  float yfin;
+  float puissance;
+  struct Rectangle* next;
+} Rectangle;
+
+/******************************************************************************
+ 2- INITIALISATION D'UN RECTANGLE
+ ******************************************************************************/
+Rectangle * createRectangle(int hauteur, int largeur, float x, float y, float xfin, float yfin, float puissance){
+
+  Rectangle * rect = calloc(1, sizeof(Rectangle));
+  rect->hauteur = hauteur;
+  rect->largeur = largeur;
+  rect->x = x;
+  rect->y = y;
+  rect->xfin = xfin;
+  rect->yfin = yfin;
+  rect->puissance = puissance;
+  rect->next = NULL;
+
+  return rect;
+}
+
+/******************************************************************************
+3- INSÉRER EN BOUT DE LISTE
+ ******************************************************************************/
+
+Rectangle * addToListR(Rectangle * tete, int hauteur, int largeur, float x, float y, float xfin, float yfin, float puissance)
+{
+    /* Empty list */
+    if (tete == NULL)
+    {
+        return createRectangle(hauteur, largeur, x, y, xfin, yfin, puissance);
+        fprintf(stderr,"Insertion impossible: Empty list !\n");
+        exit(1);
+    }
+
+    tete->next = addToListR(tete->next, hauteur, largeur, x, y, xfin, yfin, puissance);
+    return tete;
+}
+
+
+/******************************************************************************
+4- LIBÉRER LA LISTE
+ ******************************************************************************/
+
+/* ATTENTION il faut remettre le pointeur de la liste à NULL
+*   donc passage de l'adresse du pointeur
+*/
+void freeListR(Rectangle ** tete)
+{
+    /* Empty list */
+    if (*tete == NULL)
+    {
+        return;
+    }
+
+    if ((*tete)->next != NULL)
+    {
+        freeListR((*tete)->next);
+    }
+    free(*tete);
+    *tete = NULL;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 unsigned int windowWidth  = 800;
 unsigned int windowHeight = 600;
@@ -47,7 +148,7 @@ void drawFloor(){
   glEnd();
 }
 
-void drawPersonnage(Personnage* newPerso){
+void drawPersonnage(Rectangle * newPerso){
 
   glBegin(GL_QUADS);
 
@@ -59,7 +160,7 @@ void drawPersonnage(Personnage* newPerso){
 
 }
 
-void drawObstacle(Obstacle* newObs){
+void drawObstacle(Rectangle * newObs){
 
   glBegin(GL_QUADS);
 
@@ -111,10 +212,10 @@ int main(int argc, char** argv) {
 
   SDL_WM_SetCaption("IMAC Was Alone", NULL);
 
-  Personnage* newPerso = createPersonnage(10, 2, 0, 0, 20, 0, 3);
+  Rectangle * newPerso = createRectangle(10, 2, 0, 0, 20, 0, 3);
   float saut = newPerso->puissance;
 
-  Obstacle* newObs = createObstacle(10, 40, 20, 0);
+  Rectangle * newObs = createRectangle(10, 40, 20, 0, 0, 0, 0);
 
 
   // PARTIE AJOUT SON
@@ -225,20 +326,20 @@ int main(int argc, char** argv) {
 
             case SDLK_UP :
               acceleration = 0;
-              colBas = collisionBas(newPerso, newObs);
+              /*colBas = collisionBas(newPerso, newObs);*/
               break;
 
             case SDLK_RIGHT :
               rightPressed = 0;
               acceleration = 0;
-              colBas = collisionBas(newPerso, newObs);
+              /*colBas = collisionBas(newPerso, newObs);*/
 
               break;
 
             case SDLK_LEFT :
               leftPressed = 0;
               acceleration = 0;
-              colBas = collisionBas(newPerso, newObs);
+              /*colBas = collisionBas(newPerso, newObs);*/
 
               break;
 
@@ -251,17 +352,17 @@ int main(int argc, char** argv) {
           switch(e.key.keysym.sym){
             case SDLK_UP :
               upPressed = 1;
-              colBas = collisionBas(newPerso, newObs);
+              /*colBas = collisionBas(newPerso, newObs);*/
               break;
 
             case SDLK_RIGHT :
               rightPressed = 1;
-              colBas = collisionBas(newPerso, newObs);
+              /*colBas = collisionBas(newPerso, newObs);*/
               break;
 
             case SDLK_LEFT :
               leftPressed = 1;
-              colBas = collisionBas(newPerso, newObs);
+              /*colBas = collisionBas(newPerso, newObs);*/
               break;
 
             case 'q' :

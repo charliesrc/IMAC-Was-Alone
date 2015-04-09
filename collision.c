@@ -1,4 +1,4 @@
-int collisionBas(Personnage* newPerso, Obstacle* newObs){
+/*int collisionBas(Rectangle* newPerso, Rectangle* newObs){
 
   if(newPerso->x + newPerso->largeur > newObs->x && newPerso->x < newObs->x + newObs->largeur){
     if(newPerso->y <= newObs->hauteur){
@@ -10,4 +10,4 @@ int collisionBas(Personnage* newPerso, Obstacle* newObs){
   }
 
   return 0;
-}
+}*/

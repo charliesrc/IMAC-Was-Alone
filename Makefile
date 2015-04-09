@@ -20,7 +20,7 @@ $(BIN) : $(OBJ)
 	@echo "--------------------------------------------------------------"
 
 main.o : main.c
-	@echo "compile minimal"
+	@echo "compile main"
 	$(CC) $(CFLAGS) $(LIB) $(INCLUDES) -c $<
 	@echo "done..."
 

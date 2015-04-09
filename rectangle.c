@@ -1,26 +1,14 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <math.h>
-#include <time.h>
+#include "rectangle.h"
 
 /******************************************************************************
  1- DEFINITION DE LA STRUCTURE
  ******************************************************************************/
-typedef struct Rectangle {
-  int hauteur;
-  int largeur;
-  float x;
-  float y;
-  float xfin;
-  float yfin;
-  float puissance;
-  struct Rectangle* next;
-} Rectangle;
+
 
 /******************************************************************************
  2- INITIALISATION D'UN RECTANGLE
  ******************************************************************************/
-Rectangle* createRectancle(int hauteur, int largeur, float x, float y, float xfin, float yfin, float puissance){
+Rectangle* createRectangle(int hauteur, int largeur, float x, float y, float xfin, float yfin, float puissance){
 
   Rectangle* rect = calloc(1, sizeof(Rectangle));
   rect->hauteur = hauteur;
@@ -39,17 +27,17 @@ Rectangle* createRectancle(int hauteur, int largeur, float x, float y, float xfi
 3- INSÉRER EN BOUT DE LISTE
  ******************************************************************************/
 
-Rectangle * addToListR(Rectangle * tete, int v)
+Rectangle * addToListR(Rectangle * tete, int hauteur, int largeur, float x, float y, float xfin, float yfin, float puissance)
 {
     /* Empty list */
     if (tete == NULL)
     {
-        return createRectangle(10,10,0,0,30,20,3);
+        return createRectangle(hauteur, largeur, x, y, xfin, yfin, puissance);
         fprintf(stderr,"Insertion impossible: Empty list !\n");
         exit(1);
     }
 
-    tete->next = addToListR(tete->next,v);
+    tete->next = addToListR(tete->next, hauteur, largeur, x, y, xfin, yfin, puissance);
     return tete;
 }
 
