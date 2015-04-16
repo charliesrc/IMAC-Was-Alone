@@ -13,8 +13,8 @@
 #include <time.h>
 #include <string.h>
 
-/*#include "rectangle.h"*/
-#include "collision.c"
+/*#include "rectangle.h"
+#include "collision.c"*/
 
 
 static const unsigned int BIT_PER_PIXEL = 32;
@@ -22,11 +22,9 @@ static const Uint32 FRAMERATE_MILLISECONDS = 1000 / 60;
 
 
 
-
-
-
-
-
+/******************************************************************************
+                        FONCTIONS À DÉPLACER PLUS TARD
+ ******************************************************************************/
 
 /******************************************************************************
  1- DEFINITION DE LA STRUCTURE
@@ -104,20 +102,48 @@ void freeListR(Rectangle ** tete)
 
 
 
+/******************************************************************************
+1- COLLISION BAS
+ ******************************************************************************/
+
+int collisionDroite(Rectangle* newPerso, Rectangle* newObs){
+
+  if( (newPerso->x >= newObs->x + newObs->largeur) // trop à droite
+    || (newPerso->x + newPerso->largeur <= newObs->x) // trop à gauche
+    || (newPerso->y >= newObs->y + newObs->hauteur) // trop en bas
+    || (newPerso->y + newPerso->hauteur <= newObs->y) ) // trop en haut
+  {
+      return 1;
+  }
+  return 0;
+}
+
+/*
+bool Collision(AABB box1,AABB box2)
+{
+   if((box2.x >= box1.x + box1.w)      // trop à droite
+    || (box2.x + box2.w <= box1.x) // trop à gauche
+    || (box2.y >= box1.y + box1.h) // trop en bas
+    || (box2.y + box2.h <= box1.y))  // trop en haut
+          return false; 
+   else
+          return true; 
+}*/
 
 
+int collisionBas(Rectangle* newPerso, Rectangle* newObs){
 
+  /*if(newPerso->x + newPerso->largeur > newObs->x && newPerso->x < newObs->x + newObs->largeur){
+    if(newPerso->y <= newObs->hauteur){
+      return 1;
+    }
+    else{
+      return 0;
+    }
+  }
 
-
-
-
-
-
-
-
-
-
-
+  return 0;*/
+}
 
 
 
@@ -257,11 +283,15 @@ int main(int argc, char** argv) {
     SDL_GL_SwapBuffers();
     /* ****** */
 
-    printf("%d\n", colBas);
-    printf("%f\n", newPerso->y);
+    /*printf("%d\n", colBas);
+    printf("%f\n", newPerso->y);*/
 
     if (colBas == 1) {
-      newPerso->y = newObs->hauteur;
+      //newPerso->y = newObs->hauteur;
+    }
+
+    if (colDroite == 1) {
+      //newPerso->x = newObs->x - newPerso->largeur;
     }
 
 
@@ -326,20 +356,23 @@ int main(int argc, char** argv) {
 
             case SDLK_UP :
               acceleration = 0;
-              /*colBas = collisionBas(newPerso, newObs);*/
+              colBas = collisionBas(newPerso, newObs);
+              colDroite = collisionDroite(newPerso, newObs);
               break;
 
             case SDLK_RIGHT :
               rightPressed = 0;
               acceleration = 0;
-              /*colBas = collisionBas(newPerso, newObs);*/
+              colBas = collisionBas(newPerso, newObs);
+              colDroite = collisionDroite(newPerso, newObs);
 
               break;
 
             case SDLK_LEFT :
               leftPressed = 0;
               acceleration = 0;
-              /*colBas = collisionBas(newPerso, newObs);*/
+              colBas = collisionBas(newPerso, newObs);
+              colDroite = collisionDroite(newPerso, newObs);
 
               break;
 
@@ -352,17 +385,20 @@ int main(int argc, char** argv) {
           switch(e.key.keysym.sym){
             case SDLK_UP :
               upPressed = 1;
-              /*colBas = collisionBas(newPerso, newObs);*/
+              colBas = collisionBas(newPerso, newObs);
+              colDroite = collisionDroite(newPerso, newObs);
               break;
 
             case SDLK_RIGHT :
               rightPressed = 1;
-              /*colBas = collisionBas(newPerso, newObs);*/
+              colBas = collisionBas(newPerso, newObs);
+              colDroite = collisionDroite(newPerso, newObs);
               break;
 
             case SDLK_LEFT :
               leftPressed = 1;
-              /*colBas = collisionBas(newPerso, newObs);*/
+              colBas = collisionBas(newPerso, newObs);
+              colDroite = collisionDroite(newPerso, newObs);
               break;
 
             case 'q' :
