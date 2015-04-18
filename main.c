@@ -94,7 +94,7 @@ void freeListR(Rectangle ** tete)
 
     if ((*tete)->next != NULL)
     {
-        freeListR((*tete)->next);
+        freeListR(&(*tete)->next);
     }
     free(*tete);
     *tete = NULL;
@@ -103,22 +103,56 @@ void freeListR(Rectangle ** tete)
 
 
 /******************************************************************************
-1- COLLISION BAS
+1- COLLISIONS --  essayer tout d'un coup et stopper dès que collision
  ******************************************************************************/
 
 int collisionDroite(Rectangle* newPerso, Rectangle* newObs){
 
-  if( (newPerso->x >= newObs->x + newObs->largeur) // trop à droite
-    || (newPerso->x + newPerso->largeur <= newObs->x) // trop à gauche
-    || (newPerso->y >= newObs->y + newObs->hauteur) // trop en bas
-    || (newPerso->y + newPerso->hauteur <= newObs->y) ) // trop en haut
+  if((newPerso->x + newPerso->largeur >= newObs->x) && (newPerso->y < newObs->y + newObs->hauteur))
   {
-      return 1;
+    return 1;
   }
   return 0;
 }
 
+int collisionGauche(Rectangle* newPerso, Rectangle* newObs){
+
+  if((newPerso->x > newObs->x + newObs->largeur) && (newPerso->y > newObs->y + newObs->hauteur))
+  {
+    return 0;
+  } else return 1;
+}
+
+int collisionBas(Rectangle* newPerso, Rectangle* newObs){
+
+  if((newPerso->x + newPerso->largeur > newObs->x) && (newPerso->x < newObs->x + newObs->largeur) && (newPerso->y < newObs->y + newObs->hauteur))
+  {
+    return 1;
+  }
+  return 0;
+}
+
+
+int collisionHaut(Rectangle* newPerso, Rectangle* newObs){
+
+  if(((newPerso->x + newPerso->largeur < newObs->x) || (newPerso->x > newObs->x + newObs->largeur)) && (newPerso->y + newPerso->hauteur < newObs->y))
+  {
+    return 0;
+  }
+  return 1;
+}
+
+
+
 /*
+
+
+    || (newPerso->x >= newObs->x + newObs->largeur) // trop à droite
+    || (newPerso->y >= newObs->y + newObs->hauteur) // trop en bas
+    || (newPerso->y + newPerso->hauteur <= newObs->y) ) // trop en haut
+
+
+
 bool Collision(AABB box1,AABB box2)
 {
    if((box2.x >= box1.x + box1.w)      // trop à droite
@@ -131,9 +165,13 @@ bool Collision(AABB box1,AABB box2)
 }*/
 
 
-int collisionBas(Rectangle* newPerso, Rectangle* newObs){
 
-  /*if(newPerso->x + newPerso->largeur > newObs->x && newPerso->x < newObs->x + newObs->largeur){
+
+
+  /*
+//vieille collisionBas
+
+  if(newPerso->x + newPerso->largeur > newObs->x && newPerso->x < newObs->x + newObs->largeur){
     if(newPerso->y <= newObs->hauteur){
       return 1;
     }
@@ -141,11 +179,7 @@ int collisionBas(Rectangle* newPerso, Rectangle* newObs){
       return 0;
     }
   }
-
-  return 0;*/
-}
-
-
+*/
 
 
 unsigned int windowWidth  = 800;
@@ -222,6 +256,7 @@ int main(int argc, char** argv) {
   int rightPressed = 0;
   int leftPressed = 0;
   int upPressed = 0;
+  float vitessex = 0;
   float acceleration = 0.0;
   float gravite = 0.2;
   int colBas = 0;
@@ -241,8 +276,9 @@ int main(int argc, char** argv) {
   Rectangle * newPerso = createRectangle(10, 2, 0, 0, 20, 0, 3);
   float saut = newPerso->puissance;
 
-  Rectangle * newObs = createRectangle(10, 40, 20, 0, 0, 0, 0);
-
+  Rectangle * newObs = createRectangle(10, 20, 30, 0,  0, 0, 0);
+  //Rectangle * newObs = createRectangle(10, 40, 20, 0, 0, 0, 0);
+  //addToListR(newObs, 10, 10, -10, 0,  0, 0, 0);
 
   // PARTIE AJOUT SON
   // if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 1024) == -1) //Initialisation de l'API Mixer
@@ -279,20 +315,37 @@ int main(int argc, char** argv) {
 
     glColor3ub(0,0,0);
     drawObstacle(newObs);
+    //drawObstacle(newObs->next);
 
     SDL_GL_SwapBuffers();
     /* ****** */
 
-    /*printf("%d\n", colBas);
-    printf("%f\n", newPerso->y);*/
+    //printf("%d\n", colDroite);
+    //printf("%f\n", newPerso->y);
 
-    if (colBas == 1) {
-      //newPerso->y = newObs->hauteur;
-    }
 
-    if (colDroite == 1) {
-      //newPerso->x = newObs->x - newPerso->largeur;
-    }
+    /*if(colHaut){
+      newPerso->y = 0;
+      upPressed = 0;
+
+    }*/
+
+      if (colDroite) {
+        acceleration = 0;
+        vitessex = 0;
+        rightPressed = 0;
+        newPerso->x = newObs->x - newPerso->largeur;
+      }
+
+   /* if (colBas) {
+
+       else if (colGauche) {
+        leftPressed = 0;
+        newPerso->x = newObs->x + newObs->largeur;
+      } else newPerso->y = newObs->hauteur;
+    }*/
+
+
 
 
     /* Saut */
@@ -300,10 +353,6 @@ int main(int argc, char** argv) {
 
       newPerso->y += saut;
       saut -= gravite;
-
-      if (colBas == 1) {
-        newPerso->y = newObs->hauteur;
-      }
 
       if (newPerso->y <= 0){
         upPressed = 0;
@@ -316,18 +365,21 @@ int main(int argc, char** argv) {
 
     /* Déplacement */
 
+    
     if(rightPressed == 1){
+      vitessex = 0.5;
       if(acceleration < 0.6){
         acceleration += 0.1;
       }
-      newPerso->x += (0.5 + acceleration);
+      newPerso->x += (vitessex + acceleration);
     }
 
     if(leftPressed == 1){
+      vitessex = 0.5;
       if(acceleration < 0.6){
         acceleration += 0.1;
       }
-      newPerso->x -= (0.5 + acceleration);
+      newPerso->x -= (vitessex + acceleration);
     }
 
     /* Gravité */
@@ -357,14 +409,18 @@ int main(int argc, char** argv) {
             case SDLK_UP :
               acceleration = 0;
               colBas = collisionBas(newPerso, newObs);
+              colHaut = collisionHaut(newPerso, newObs);
               colDroite = collisionDroite(newPerso, newObs);
+              colGauche = collisionGauche(newPerso, newObs);
               break;
 
             case SDLK_RIGHT :
               rightPressed = 0;
               acceleration = 0;
               colBas = collisionBas(newPerso, newObs);
+              colHaut = collisionHaut(newPerso, newObs);
               colDroite = collisionDroite(newPerso, newObs);
+              colGauche = collisionGauche(newPerso, newObs);
 
               break;
 
@@ -372,7 +428,9 @@ int main(int argc, char** argv) {
               leftPressed = 0;
               acceleration = 0;
               colBas = collisionBas(newPerso, newObs);
+              colHaut = collisionHaut(newPerso, newObs);
               colDroite = collisionDroite(newPerso, newObs);
+              colGauche = collisionGauche(newPerso, newObs);
 
               break;
 
@@ -386,19 +444,25 @@ int main(int argc, char** argv) {
             case SDLK_UP :
               upPressed = 1;
               colBas = collisionBas(newPerso, newObs);
+              colHaut = collisionHaut(newPerso, newObs);
               colDroite = collisionDroite(newPerso, newObs);
+              colGauche = collisionGauche(newPerso, newObs);
               break;
 
             case SDLK_RIGHT :
               rightPressed = 1;
               colBas = collisionBas(newPerso, newObs);
+              colHaut = collisionHaut(newPerso, newObs);
               colDroite = collisionDroite(newPerso, newObs);
+              colGauche = collisionGauche(newPerso, newObs);
               break;
 
             case SDLK_LEFT :
               leftPressed = 1;
               colBas = collisionBas(newPerso, newObs);
+              colHaut = collisionHaut(newPerso, newObs);
               colDroite = collisionDroite(newPerso, newObs);
+              colGauche = collisionGauche(newPerso, newObs);
               break;
 
             case 'q' :
