@@ -308,13 +308,17 @@ int main(int argc, char** argv) {
     glMatrixMode(GL_MODELVIEW);
 
     glLoadIdentity();
+
+    glTranslatef(- newPerso->x, - newPerso->y, 0.0);
+
     drawRepere();
     drawFloor();
-    glColor3ub(255,0,0);
-    drawPersonnage(newPerso);
-
     glColor3ub(0,0,0);
     drawObstacle(newObs);
+
+
+    glColor3ub(255,0,0);
+    drawPersonnage(newPerso);
     //drawObstacle(newObs->next);
 
     SDL_GL_SwapBuffers();
