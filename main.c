@@ -108,7 +108,7 @@ void freeListR(Rectangle ** tete)
 
 int collisionDroite(Rectangle* newPerso, Rectangle* newObs){
 
-  if((newPerso->x + newPerso->largeur >= newObs->x) && (newPerso->y < newObs->y + newObs->hauteur))
+  if((newPerso->x + newPerso->largeur > newObs->x) && (newPerso->y < newObs->y + newObs->hauteur))
   {
     return 1;
   }
@@ -331,9 +331,9 @@ int main(int argc, char** argv) {
     }*/
 
       if (colDroite) {
+        rightPressed = 0;
         acceleration = 0;
         vitessex = 0;
-        rightPressed = 0;
         newPerso->x = newObs->x - newPerso->largeur;
       }
 
@@ -372,6 +372,8 @@ int main(int argc, char** argv) {
         acceleration += 0.1;
       }
       newPerso->x += (vitessex + acceleration);
+    } else{
+      vitessex = 0;
     }
 
     if(leftPressed == 1){
@@ -408,10 +410,6 @@ int main(int argc, char** argv) {
 
             case SDLK_UP :
               acceleration = 0;
-              colBas = collisionBas(newPerso, newObs);
-              colHaut = collisionHaut(newPerso, newObs);
-              colDroite = collisionDroite(newPerso, newObs);
-              colGauche = collisionGauche(newPerso, newObs);
               break;
 
             case SDLK_RIGHT :
@@ -450,11 +448,15 @@ int main(int argc, char** argv) {
               break;
 
             case SDLK_RIGHT :
-              rightPressed = 1;
               colBas = collisionBas(newPerso, newObs);
               colHaut = collisionHaut(newPerso, newObs);
               colDroite = collisionDroite(newPerso, newObs);
               colGauche = collisionGauche(newPerso, newObs);
+              if(colDroite == 1){
+                rightPressed = 0;
+               } else {
+                rightPressed = 1;
+               }
               break;
 
             case SDLK_LEFT :
