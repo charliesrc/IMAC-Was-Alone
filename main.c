@@ -106,6 +106,21 @@ void freeListR(Rectangle ** tete)
 1- COLLISIONS --  essayer tout d'un coup et stopper dès que collision
  ******************************************************************************/
 
+int Collision(Rectangle* newPerso, Rectangle* newObs, int *colBas, int *colHaut, int *colDroite, int *colGauche)
+{
+   if((newPerso.x >= newObs.x + newObs.w)      // trop à droite
+    || (newPerso.x + newPerso.w <= newObs.x) // trop à gauche
+    || (newPerso.y >= newObs.y + newObs.h) // trop en bas
+    || (newPerso.y + newPerso.h <= newObs.y))  // trop en haut
+          return 0; 
+   else
+          
+      colBas = collisionBas(newPerso, newObs);
+      colHaut = collisionHaut(newPerso, newObs);
+      colDroite = collisionDroite(newPerso, newObs);
+      colGauche = collisionGauche(newPerso, newObs);
+}
+
 int collisionDroite(Rectangle* newPerso, Rectangle* newObs){
 
   if((newPerso->x + newPerso->largeur > newObs->x) && (newPerso->y < newObs->y + newObs->hauteur))
@@ -259,6 +274,7 @@ int main(int argc, char** argv) {
   float vitessex = 0;
   float acceleration = 0.0;
   float gravite = 0.2;
+  int col = 0;
   int colBas = 0;
   int colHaut = 0;
   int colGauche = 0;
@@ -308,17 +324,13 @@ int main(int argc, char** argv) {
     glMatrixMode(GL_MODELVIEW);
 
     glLoadIdentity();
-
-    glTranslatef(- newPerso->x, - newPerso->y, 0.0);
-
     drawRepere();
     drawFloor();
-    glColor3ub(0,0,0);
-    drawObstacle(newObs);
-
-
     glColor3ub(255,0,0);
     drawPersonnage(newPerso);
+
+    glColor3ub(0,0,0);
+    drawObstacle(newObs);
     //drawObstacle(newObs->next);
 
     SDL_GL_SwapBuffers();
@@ -414,25 +426,20 @@ int main(int argc, char** argv) {
 
             case SDLK_UP :
               acceleration = 0;
+              col = Collision(Rectangle* newPerso, Rectangle* newObs, &colBas, &colHaut, &colDroite, &colGauche);
               break;
 
             case SDLK_RIGHT :
               rightPressed = 0;
               acceleration = 0;
-              colBas = collisionBas(newPerso, newObs);
-              colHaut = collisionHaut(newPerso, newObs);
-              colDroite = collisionDroite(newPerso, newObs);
-              colGauche = collisionGauche(newPerso, newObs);
+              col = Collision(Rectangle* newPerso, Rectangle* newObs, &colBas, &colHaut, &colDroite, &colGauche);
 
               break;
 
             case SDLK_LEFT :
               leftPressed = 0;
               acceleration = 0;
-              colBas = collisionBas(newPerso, newObs);
-              colHaut = collisionHaut(newPerso, newObs);
-              colDroite = collisionDroite(newPerso, newObs);
-              colGauche = collisionGauche(newPerso, newObs);
+              col = Collision(Rectangle* newPerso, Rectangle* newObs, &colBas, &colHaut, &colDroite, &colGauche);
 
               break;
 
@@ -445,17 +452,11 @@ int main(int argc, char** argv) {
           switch(e.key.keysym.sym){
             case SDLK_UP :
               upPressed = 1;
-              colBas = collisionBas(newPerso, newObs);
-              colHaut = collisionHaut(newPerso, newObs);
-              colDroite = collisionDroite(newPerso, newObs);
-              colGauche = collisionGauche(newPerso, newObs);
+              col = Collision(Rectangle* newPerso, Rectangle* newObs, &colBas, &colHaut, &colDroite, &colGauche);
               break;
 
             case SDLK_RIGHT :
-              colBas = collisionBas(newPerso, newObs);
-              colHaut = collisionHaut(newPerso, newObs);
-              colDroite = collisionDroite(newPerso, newObs);
-              colGauche = collisionGauche(newPerso, newObs);
+              col = Collision(Rectangle* newPerso, Rectangle* newObs, &colBas, &colHaut, &colDroite, &colGauche);
               if(colDroite == 1){
                 rightPressed = 0;
                } else {
@@ -465,10 +466,7 @@ int main(int argc, char** argv) {
 
             case SDLK_LEFT :
               leftPressed = 1;
-              colBas = collisionBas(newPerso, newObs);
-              colHaut = collisionHaut(newPerso, newObs);
-              colDroite = collisionDroite(newPerso, newObs);
-              colGauche = collisionGauche(newPerso, newObs);
+              col = Collision(Rectangle* newPerso, Rectangle* newObs, &colBas, &colHaut, &colDroite, &colGauche);
               break;
 
             case 'q' :
