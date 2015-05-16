@@ -106,21 +106,6 @@ void freeListR(Rectangle ** tete)
 1- COLLISIONS --  essayer tout d'un coup et stopper dès que collision
  ******************************************************************************/
 
-int Collision(Rectangle* newPerso, Rectangle* newObs, int *colBas, int *colHaut, int *colDroite, int *colGauche)
-{
-   if((newPerso.x >= newObs.x + newObs.w)      // trop à droite
-    || (newPerso.x + newPerso.w <= newObs.x) // trop à gauche
-    || (newPerso.y >= newObs.y + newObs.h) // trop en bas
-    || (newPerso.y + newPerso.h <= newObs.y))  // trop en haut
-          return 0; 
-   else
-          
-      colBas = collisionBas(newPerso, newObs);
-      colHaut = collisionHaut(newPerso, newObs);
-      colDroite = collisionDroite(newPerso, newObs);
-      colGauche = collisionGauche(newPerso, newObs);
-}
-
 int collisionDroite(Rectangle* newPerso, Rectangle* newObs){
 
   if((newPerso->x + newPerso->largeur > newObs->x) && (newPerso->y < newObs->y + newObs->hauteur))
@@ -132,10 +117,11 @@ int collisionDroite(Rectangle* newPerso, Rectangle* newObs){
 
 int collisionGauche(Rectangle* newPerso, Rectangle* newObs){
 
-  if((newPerso->x > newObs->x + newObs->largeur) && (newPerso->y > newObs->y + newObs->hauteur))
+  if((newPerso->x < newObs->x + newObs->largeur) && (newPerso->y < newObs->y + newObs->hauteur) && (newPerso->x + newPerso->largeur > newObs->x))
   {
-    return 0;
-  } else return 1;
+    return 1;
+  }
+  return 0;
 }
 
 int collisionBas(Rectangle* newPerso, Rectangle* newObs){
@@ -157,6 +143,23 @@ int collisionHaut(Rectangle* newPerso, Rectangle* newObs){
   return 1;
 }
 
+int Collision(Rectangle* newPerso, Rectangle* newObs, int *colBas, int *colHaut, int *colDroite, int *colGauche)
+{
+  //  if((newPerso->x >= newObs->x + newObs->largeur)      // trop à droite
+  //   || (newPerso->x + newPerso->largeur <= newObs->x) // trop à gauche
+  //   || (newPerso->y >= newObs->y + newObs->hauteur) // trop en bas
+  //   || (newPerso->y + newPerso->hauteur <= newObs->y))  // trop en haut
+  //         return 0;
+  //  else{
+      *colBas = collisionBas(newPerso, newObs);
+      *colHaut = collisionHaut(newPerso, newObs);
+      *colDroite = collisionDroite(newPerso, newObs);
+      *colGauche = collisionGauche(newPerso, newObs);
+      printf("je rentre dnas la fonction\n");
+      return 1;
+  //}
+}
+
 
 
 /*
@@ -174,9 +177,9 @@ bool Collision(AABB box1,AABB box2)
     || (box2.x + box2.w <= box1.x) // trop à gauche
     || (box2.y >= box1.y + box1.h) // trop en bas
     || (box2.y + box2.h <= box1.y))  // trop en haut
-          return false; 
+          return false;
    else
-          return true; 
+          return true;
 }*/
 
 
@@ -292,7 +295,7 @@ int main(int argc, char** argv) {
   Rectangle * newPerso = createRectangle(10, 2, 0, 0, 20, 0, 3);
   float saut = newPerso->puissance;
 
-  Rectangle * newObs = createRectangle(10, 20, 30, 0,  0, 0, 0);
+  Rectangle * newObs = createRectangle(10, 20, -30, 0,  0, 0, 0);
   //Rectangle * newObs = createRectangle(10, 40, 20, 0, 0, 0, 0);
   //addToListR(newObs, 10, 10, -10, 0,  0, 0, 0);
 
@@ -324,6 +327,9 @@ int main(int argc, char** argv) {
     glMatrixMode(GL_MODELVIEW);
 
     glLoadIdentity();
+
+    glTranslatef(- newPerso->x, - newPerso->y, 0.0);
+
     drawRepere();
     drawFloor();
     glColor3ub(255,0,0);
@@ -336,7 +342,10 @@ int main(int argc, char** argv) {
     SDL_GL_SwapBuffers();
     /* ****** */
 
-    //printf("%d\n", colDroite);
+    printf("colHaut : %d\n", colHaut);
+    printf("colBas : %d\n", colBas);
+    printf("colDroite : %d\n", colDroite);
+    printf("colGauche : %d\n", colGauche);
     //printf("%f\n", newPerso->y);
 
 
@@ -346,12 +355,7 @@ int main(int argc, char** argv) {
 
     }*/
 
-      if (colDroite) {
-        rightPressed = 0;
-        acceleration = 0;
-        vitessex = 0;
-        newPerso->x = newObs->x - newPerso->largeur;
-      }
+
 
    /* if (colBas) {
 
@@ -361,16 +365,21 @@ int main(int argc, char** argv) {
       } else newPerso->y = newObs->hauteur;
     }*/
 
+    col = Collision(newPerso, newObs, &colBas, &colHaut, &colDroite, &colGauche);
 
-
+    // if(colBas == 1){
+    //     gravite = 0;
+    //     upPressed = 0;
+    //     colBas = 0;
+    //     saut = 0;
+    // }
 
     /* Saut */
     if(upPressed == 1){
+        newPerso->y += saut;
+        saut -= gravite;
 
-      newPerso->y += saut;
-      saut -= gravite;
-
-      if (newPerso->y <= 0){
+      if (newPerso->y <= 0 || colBas == 0){
         upPressed = 0;
         saut = newPerso->puissance;
         colBas = 0;
@@ -379,16 +388,24 @@ int main(int argc, char** argv) {
 
     }
 
+
+
     /* Déplacement */
 
-    
+
     if(rightPressed == 1){
-      vitessex = 0.5;
-      if(acceleration < 0.6){
-        acceleration += 0.1;
+      if (colDroite == 0) {
+        vitessex = 0.5;
+        if(acceleration < 0.6){
+          acceleration += 0.1;
+        }
+        newPerso->x += (vitessex + acceleration);
       }
-      newPerso->x += (vitessex + acceleration);
-    } else{
+      if (colBas == 0 && newPerso->y > 0) {
+        newPerso->y -= gravite;
+      }
+    }
+    else{
       vitessex = 0;
     }
 
@@ -426,20 +443,19 @@ int main(int argc, char** argv) {
 
             case SDLK_UP :
               acceleration = 0;
-              col = Collision(Rectangle* newPerso, Rectangle* newObs, &colBas, &colHaut, &colDroite, &colGauche);
               break;
 
             case SDLK_RIGHT :
               rightPressed = 0;
               acceleration = 0;
-              col = Collision(Rectangle* newPerso, Rectangle* newObs, &colBas, &colHaut, &colDroite, &colGauche);
+
+
 
               break;
 
             case SDLK_LEFT :
               leftPressed = 0;
               acceleration = 0;
-              col = Collision(Rectangle* newPerso, Rectangle* newObs, &colBas, &colHaut, &colDroite, &colGauche);
 
               break;
 
@@ -452,21 +468,33 @@ int main(int argc, char** argv) {
           switch(e.key.keysym.sym){
             case SDLK_UP :
               upPressed = 1;
-              col = Collision(Rectangle* newPerso, Rectangle* newObs, &colBas, &colHaut, &colDroite, &colGauche);
               break;
 
             case SDLK_RIGHT :
-              col = Collision(Rectangle* newPerso, Rectangle* newObs, &colBas, &colHaut, &colDroite, &colGauche);
-              if(colDroite == 1){
-                rightPressed = 0;
-               } else {
-                rightPressed = 1;
-               }
+              // if(colDroite == 1){
+              //   rightPressed = 0;
+              //  } else {
+              //   rightPressed = 1;
+              //  }
+
+              //  if (colDroite == 1) {
+              //    rightPressed = 0;
+              //    acceleration = 0;
+              //    vitessex = 0;
+              //    colDroite = 0;
+              //    newPerso->x = newObs->x - newPerso->largeur;
+              //  }
+              //  else {
+              //    rightPressed = 1;
+              //   }
+              //colGauche = 0;
+
+              rightPressed = 1;
               break;
 
             case SDLK_LEFT :
+              //colDroite = 0;
               leftPressed = 1;
-              col = Collision(Rectangle* newPerso, Rectangle* newObs, &colBas, &colHaut, &colDroite, &colGauche);
               break;
 
             case 'q' :
