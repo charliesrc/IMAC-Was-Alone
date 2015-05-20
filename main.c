@@ -89,7 +89,7 @@ Rectangle * createRectangle(float hauteur, float largeur, float x, float y, floa
  }
 
  /******************************************************************************
-  5- DETECTION FIN DE NIVEAU
+  4- DETECTION FIN DE NIVEAU
   ******************************************************************************/
 
  int arrive(Rectangle * perso){
@@ -228,8 +228,7 @@ int main(int argc, char** argv) {
 
 
   perso[0] = createRectangle(6, 2.5, 0, 2, 50, 10, 2);
-
-  perso[1] = createRectangle(3, 3, 0, -2, 20, 0, 1.5);
+  perso[1] = createRectangle(3, 3, -4, 0, 20, 0, 1.5);
 
 
   obs[0] = createRectangle(10, 100, -50, -10, 0, 0, 0);
@@ -255,8 +254,9 @@ int main(int argc, char** argv) {
 
     //printf("drawRepere ok\n");
 
-    glColor3ub(255, 0, 0);
+    glColor3ub(50, 0, 205);
     drawPersonnage(perso[0]);
+    glColor3ub(128, 50, 128);
     drawPersonnage(perso[1]);
 
     glColor3ub(0,0,0);
@@ -352,7 +352,7 @@ int main(int argc, char** argv) {
         }
         perso[cmptPerso]->x += (vitessex + acceleration);
       }
-      if (colBas == 0 && perso[0]->y > 0) {
+      if (colBas == 0 && perso[cmptPerso]->y > 0) {
         perso[cmptPerso]->y -= gravite;
       }
     }
@@ -424,6 +424,10 @@ int main(int argc, char** argv) {
               break;
 
             case SDLK_SPACE :
+              cmptPerso = (cmptPerso+1) % nbPerso;
+              break;
+
+            case SDLK_TAB :
               cmptPerso = (cmptPerso+1) % nbPerso;
 
             default : break;
