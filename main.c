@@ -39,8 +39,8 @@ Rectangle * createRectangle(float hauteur, float largeur, float x, float y, floa
   rect->largeur = largeur;
   rect->x = x;
   rect->y = y;
-  rect->xfin = xfin + 2;
-  rect->yfin = yfin + 2;
+  rect->xfin = xfin;
+  rect->yfin = yfin;
   rect->puissance = puissance;
 
   return rect;
@@ -70,7 +70,7 @@ Rectangle * createRectangle(float hauteur, float largeur, float x, float y, floa
 
  int collisionBas(Rectangle* perso, Rectangle* newObs, int *hauteurArret){
 
-   if((perso->x + perso->largeur > newObs->x) && (perso->x < newObs->x + newObs->largeur) && (perso->y <= newObs->y + newObs->hauteur))
+   if((perso->x + perso->largeur > newObs->x) && (perso->x < newObs->x + newObs->largeur) && (perso->y <= newObs->y + newObs->hauteur) && (perso->y >= newObs->y + newObs->hauteur - 5))
    {
      *hauteurArret = newObs->y + newObs->hauteur;
      return 1;
@@ -88,14 +88,30 @@ Rectangle * createRectangle(float hauteur, float largeur, float x, float y, floa
    return 1;
  }
 
+ /******************************************************************************
+  5- DETECTION FIN DE NIVEAU
+  ******************************************************************************/
 
+ int arrive(Rectangle * perso){
 
-unsigned int windowWidth  = 800;
-unsigned int windowHeight = 600;
+   int end = 0;
+
+   if((perso->x > perso->xfin) && (perso->x < perso->xfin + perso->largeur) && (perso->y == perso->yfin)){
+
+     end = 1;
+   }
+   else{
+     end = 0;
+   }
+   return end;
+ }
+
 
 /******************************************************************************
- 4- FONCTIONS POUR DESSINER
+ 5- FONCTIONS POUR DESSINER
  ******************************************************************************/
+ unsigned int windowWidth  = 800;
+ unsigned int windowHeight = 600;
 
 void drawRepere(){
   glBegin(GL_LINES);
@@ -120,6 +136,19 @@ void drawPersonnage(Rectangle * perso){
 
 }
 
+void drawFinish(Rectangle * perso){
+
+  glLineWidth(4);
+
+  glBegin(GL_LINE_LOOP);
+  glVertex2f(perso->xfin, perso->yfin);
+  glVertex2f(perso->xfin + perso->largeur + 1, perso->yfin);
+  glVertex2f(perso->xfin + perso->largeur + 1, perso->yfin + perso->hauteur + 1);
+  glVertex2f(perso->xfin, perso->yfin + perso->hauteur + 1);
+  glEnd();
+
+}
+
 void drawObstacle(Rectangle * newObs){
 
   glBegin(GL_QUADS);
@@ -128,6 +157,18 @@ void drawObstacle(Rectangle * newObs){
   glVertex2f(newObs->x + newObs->largeur, newObs->y);
   glVertex2f(newObs->x + newObs->largeur, newObs->y + newObs->hauteur);
   glVertex2f(newObs->x, newObs->y + newObs->hauteur);
+
+  glEnd();
+
+}
+
+void drawFleche(Rectangle * perso){
+
+  glBegin(GL_TRIANGLES);
+
+  glVertex2f(perso->x + ((perso->largeur) / 2), perso->y + perso->hauteur);
+  glVertex2f(perso->x + ((perso->largeur) / 2) + 1, perso->y + perso->hauteur + 1);
+  glVertex2f(perso->x + ((perso->largeur) / 2) - 1, perso->y + perso->hauteur + 1);
 
   glEnd();
 
@@ -152,11 +193,11 @@ void setVideoMode(int winWidth, int winHeight) {
   SDL_GL_SwapBuffers();
 }
 
-
 int main(int argc, char** argv) {
 
-  int nbPerso = 1;
+  int nbPerso = 2;
   int nbObs = 2;
+  int cmptPerso = 0;
   int rightPressed = 0;
   int leftPressed = 0;
   int upPressed = 0;
@@ -168,8 +209,11 @@ int main(int argc, char** argv) {
   int colHaut = 0;
   int colGauche = 0;
   int colDroite = 0;
+  int colDroitePerso = 0;
+  int colGauchePerso = 0;
   int verifColBas = 0;
   int hauteurArret = 0;
+  int fin = 0;
   Rectangle * perso[nbPerso];
   Rectangle * obs[nbObs];
 
@@ -183,8 +227,9 @@ int main(int argc, char** argv) {
   SDL_WM_SetCaption("IMAC Was Alone", NULL);
 
 
-  perso[0] = createRectangle(10, 2, 0, 2, 0, 0, 4);
-  float saut = perso[0]->puissance;
+  perso[0] = createRectangle(6, 2.5, 0, 2, 50, 10, 2);
+
+  perso[1] = createRectangle(3, 3, 0, -2, 20, 0, 1.5);
 
 
   obs[0] = createRectangle(10, 100, -50, -10, 0, 0, 0);
@@ -204,7 +249,7 @@ int main(int argc, char** argv) {
 
     glLoadIdentity();
 
-    glTranslatef(- perso[0]->x, - perso[0]->y, 0.0);
+    glTranslatef(- perso[cmptPerso]->x, - perso[cmptPerso]->y, 0.0);
 
     drawRepere();
 
@@ -212,30 +257,61 @@ int main(int argc, char** argv) {
 
     glColor3ub(255, 0, 0);
     drawPersonnage(perso[0]);
+    drawPersonnage(perso[1]);
 
     glColor3ub(0,0,0);
     drawObstacle(obs[0]);
     drawObstacle(obs[1]);
+
+    glColor3ub(255,255,255);
+    drawFinish(perso[0]);
+    drawFinish(perso[1]);
+
+    drawFleche(perso[cmptPerso]);
+
     //printf("drawObstacle ok\n");
 
 
 
     SDL_GL_SwapBuffers();
 
+    colBas = 0;
+    float saut = perso[cmptPerso]->puissance;
+
+    //////////////////////////////////////////
+    // COLLISIONS ENTRE PERSOS ET OBSTACLES //
+    //////////////////////////////////////////
 
     for(int i=0; i < nbObs; i++){
-      colGauche = collisionGauche(perso[0], obs[i]);
-      colDroite = collisionDroite(perso[0], obs[i]);
-      verifColBas = collisionBas(perso[0], obs[i], &hauteurArret);
+      verifColBas = 0;
+      colGauche = collisionGauche(perso[cmptPerso], obs[i]);
+      colDroite = collisionDroite(perso[cmptPerso], obs[i]);
+      verifColBas = collisionBas(perso[cmptPerso], obs[i], &hauteurArret);
       if(verifColBas == 1){
         colBas = 1;
       }
     }
 
+    //////////////////////////////////////////
+    //////// COLLISIONS ENTRE PERSOS  ////////
+    //////////////////////////////////////////
+
+    for(int i = 0; i < nbPerso; i++){
+      verifColBas = 0;
+      if (i != cmptPerso) {
+        colGauchePerso = collisionGauche(perso[cmptPerso], perso[i]);
+        colDroitePerso = collisionDroite(perso[cmptPerso], perso[i]);
+        verifColBas = collisionBas(perso[cmptPerso], perso[i], &hauteurArret);
+        if(verifColBas == 1){
+          colBas = 1;
+        }
+      }
+    }
+
     /* Saut */
     if (colBas == 1){
-      perso[0]->y = hauteurArret;
-      saut = perso[0]->puissance;
+      perso[cmptPerso]->y = hauteurArret;
+      saut = perso[cmptPerso]->puissance;
       accelerationChute = 0;
     }
     else{
@@ -243,20 +319,18 @@ int main(int argc, char** argv) {
       if(accelerationChute < 10){
         accelerationChute += 0.1;
       }
-      perso[0]->y -= gravite + accelerationChute ;
+      perso[cmptPerso]->y -= gravite + accelerationChute ;
     }
     if(upPressed == 1){
-        perso[0]->y += saut;
+        perso[cmptPerso]->y += saut;
         saut -= gravite;
-        if(perso[0]->y == hauteurArret){
-          saut = perso[0]->puissance;
-          perso[0]->y = hauteurArret;
+        if(perso[cmptPerso]->y == hauteurArret){
+          saut = perso[cmptPerso]->puissance;
+          perso[cmptPerso]->y = hauteurArret;
           gravite = 0;
         }
         colBas = 0;
     }
-
-
 
     /* Déplacement */
 
@@ -266,21 +340,23 @@ int main(int argc, char** argv) {
     printf("colDroite : %d\n", colDroite);
     printf("colGauche : %d\n", colGauche);
     printf("upPressed : %d\n", upPressed);
+    printf("verifColBas : %d\n", verifColBas);
+    printf("cmptPerso : %d\n", cmptPerso);
 
 
     if(rightPressed == 1){
-      if (colDroite == 0) {
+      if (colDroite == 0 && colDroitePerso == 0) {
         vitessex = 0.4;
         if(acceleration < 0.6){
           acceleration += 0.1;
         }
-        perso[0]->x += (vitessex + acceleration);
+        perso[cmptPerso]->x += (vitessex + acceleration);
       }
       if (colBas == 0 && perso[0]->y > 0) {
-        perso[0]->y -= gravite;
+        perso[cmptPerso]->y -= gravite;
       }
     }
-    if(colDroite == 1){
+    if(colDroite == 1 || colDroitePerso == 1){
       vitessex = 0;
       acceleration = 0;
       //perso[0]->x = perso[0]->x - 1;
@@ -288,29 +364,32 @@ int main(int argc, char** argv) {
     }
 
     if(leftPressed == 1){
-      if (colGauche == 0) {
+      if (colGauche == 0 && colGauchePerso == 0) {
       vitessex = 0.4;
         if(acceleration < 0.6){
           acceleration += 0.1;
         }
-      perso[0]->x -= (vitessex + acceleration);
+      perso[cmptPerso]->x -= (vitessex + acceleration);
       }
-      if (colBas == 0 && perso[0]->y > 0) {
-        perso[0]->y -= gravite;
+      if (colBas == 0 && perso[cmptPerso]->y > 0) {
+        perso[cmptPerso]->y -= gravite;
       }
     }
-    if(colGauche == 1){
+    if(colGauche == 1 || colGauchePerso == 1){
       vitessex = 0;
       acceleration = 0;
       //perso[0]->x = perso[0]->x + 1;
       colGauche = 0;
     }
     /* Gravité */
-    if (perso[0]->y > hauteurArret) {
-      perso[0]->y = perso[0]->y - gravite;
+    if (perso[cmptPerso]->y > hauteurArret) {
+      perso[cmptPerso]->y = perso[cmptPerso]->y - gravite;
     }
 
-
+    fin = arrive(perso[cmptPerso]);
+    if(fin == 1){
+      printf("End of the game \n");
+    }
 
 
     SDL_Event e;
@@ -336,8 +415,6 @@ int main(int argc, char** argv) {
               rightPressed = 0;
               acceleration = 0;
 
-
-
               break;
 
             case SDLK_LEFT :
@@ -345,6 +422,9 @@ int main(int argc, char** argv) {
               acceleration = 0;
 
               break;
+
+            case SDLK_SPACE :
+              cmptPerso = (cmptPerso+1) % nbPerso;
 
             default : break;
           }
