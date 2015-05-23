@@ -1,14 +1,16 @@
 CC       =  gcc
 CFLAGS   = -Wall -O2 -g
-LIB      = -L/usr/local/lib -lSDL -lSDLmain -lSDL_image
-INCLUDES = -I/usr/local/include -framework Cocoa -framework OpenGL
+LIB      = -lSDL -lGLU -lGL -lm -lSDL_image
+INCLUDES = 
 
-OBJ      = main.o functions.o 
+OBJ      = main.o functions.o
 RM       = rm -f
 BIN      = main
 DIRNAME  = $(shell basename $$PWD)
 BACKUP   = $(shell date +`basename $$PWD`-%m.%d.%H.%M.tgz)
 STDNAME  = $(DIRNAME).tgz
+
+
 
 all : $(BIN)
 
@@ -19,17 +21,16 @@ $(BIN) : $(OBJ)
 	@echo "                 to execute type: ./$(BIN) &"
 	@echo "--------------------------------------------------------------"
 
-main.o : main.c functions.c 
+main.o : main.c functions.c
 	@echo "compile main"
 	$(CC) $(CFLAGS) $(LIB) $(INCLUDES) -c $<  
 	@echo "done..."
+
 
 functions.o : functions.c
 	@echo "compile functions"
 	$(CC) $(CFLAGS) $(LIB) $(INCLUDES) -c $<  
 	@echo "done..."
-
-
 
 clean :	
 	@echo "**************************"
