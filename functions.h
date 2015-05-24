@@ -1,3 +1,17 @@
+#include <SDL/SDL.h>
+#include <SDL/SDL_mixer.h>
+#ifdef __APPLE__
+  #include <OpenGL/gl.h>
+  #include <OpenGL/glu.h>
+#else
+  #include <GL/gl.h>
+  #include <GL/glu.h>
+#endif
+#include <stdlib.h>
+#include <stdio.h>
+#include <math.h>
+#include <time.h>
+#include <string.h>
 
 static const unsigned int BIT_PER_PIXEL = 32;
 static const Uint32 FRAMERATE_MILLISECONDS = 1000 / 60;
@@ -52,3 +66,12 @@ void drawFleche(Rectangle * perso);
 void reshape(int winWidth, int winHeight);
 
 void setVideoMode(int winWidth, int winHeight);
+
+
+/* 6- FONCTION POUR INITIALISER UN NIVEAU A PARTIR D'UN FICHIER */
+
+
+
+
+
+

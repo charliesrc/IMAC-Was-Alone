@@ -1,20 +1,5 @@
-#include <SDL/SDL.h>
-#include <SDL/SDL_mixer.h>
-#ifdef __APPLE__
-  #include <OpenGL/gl.h>
-  #include <OpenGL/glu.h>
-#else
-  #include <GL/gl.h>
-  #include <GL/glu.h>
-#endif
-#include <stdlib.h>
-#include <stdio.h>
-#include <math.h>
-#include <time.h>
-#include <string.h>
 
 #include "functions.h"
-
 
 /******************************************************************************
  1- INITIALISATION D'UN RECTANGLE
@@ -177,3 +162,26 @@ void setVideoMode(int winWidth, int winHeight) {
   glClearColor(0.2, 0.5, 0.5, 1);
   SDL_GL_SwapBuffers();
 }
+
+
+/******************************************************************************
+ 5- FONCTION POUR INITIALISER UN NIVEAU A PARTIR D'UN FICHIER
+ ******************************************************************************/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
