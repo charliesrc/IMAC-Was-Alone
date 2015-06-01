@@ -24,7 +24,7 @@ Rectangle * createRectangle(float hauteur, float largeur, float x, float y, floa
 
  int collisionDroite(Rectangle* perso, Rectangle* newObs){
 
-   if((perso->x + perso->largeur > newObs->x - 0.5) && (perso->x + perso->largeur <= newObs->x + 0.5) && (perso->y < newObs->y + newObs->hauteur))
+   if((perso->x + perso->largeur > newObs->x - 0.6) && (perso->x + perso->largeur <= newObs->x) && (perso->y <= newObs->y + newObs->hauteur) && (perso->y + perso->hauteur >= newObs->y))
    {
      return 1;
    }
@@ -33,7 +33,7 @@ Rectangle * createRectangle(float hauteur, float largeur, float x, float y, floa
 
  int collisionGauche(Rectangle* perso, Rectangle* newObs){
 
-   if((perso->x < newObs->x + newObs->largeur + 0.5) && (perso->x >= newObs->x + newObs->largeur - 0.5) && (perso->y < newObs->y + newObs->hauteur))
+   if((perso->x < newObs->x + newObs->largeur + 0.6) && (perso->x >= newObs->x + newObs->largeur) && (perso->y <= newObs->y + newObs->hauteur) && (perso->y + perso->hauteur >= newObs->y))
    {
      return 1;
    }
@@ -42,7 +42,7 @@ Rectangle * createRectangle(float hauteur, float largeur, float x, float y, floa
 
  int collisionBas(Rectangle* perso, Rectangle* newObs, int *hauteurArret){
 
-   if((perso->x + perso->largeur > newObs->x) && (perso->x < newObs->x + newObs->largeur) && (perso->y <= newObs->y + newObs->hauteur) && (perso->y >= newObs->y + newObs->hauteur - 5))
+   if((perso->x + perso->largeur > newObs->x) && (perso->x < newObs->x + newObs->largeur) && (perso->y <= newObs->y + newObs->hauteur) && (perso->y >= newObs->y + newObs->hauteur - 3))
    {
      *hauteurArret = newObs->y + newObs->hauteur;
      return 1;
@@ -52,7 +52,7 @@ Rectangle * createRectangle(float hauteur, float largeur, float x, float y, floa
 
   int collisionHaut(Rectangle* perso, Rectangle* newObs){
 
-   if((perso->x + perso->largeur > newObs->x) && (perso->x < newObs->x + newObs->largeur) && (perso->y + perso->hauteur <= newObs->y) && (perso->y + perso->hauteur >= newObs->y - 2))
+   if((perso->x + perso->largeur > newObs->x) && (perso->x < newObs->x + newObs->largeur) && (perso->y + perso->hauteur >= newObs->y - 1) && (perso->y < newObs->y + newObs->hauteur))
    {
      return 1;
    }
@@ -166,21 +166,3 @@ void setVideoMode(int winWidth, int winHeight) {
 /******************************************************************************
  5- FONCTION POUR INITIALISER UN NIVEAU A PARTIR D'UN FICHIER
  ******************************************************************************/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -7,7 +7,7 @@ unsigned int windowHeight = 600;
 int main(int argc, char** argv) {
 
   int nbPerso = 2;
-  int nbObs = 3;
+  int nbObs = 5;
   int cmptPerso = 0;
   int rightPressed = 0;
   int leftPressed = 0;
@@ -22,7 +22,10 @@ int main(int argc, char** argv) {
   int colDroite = 0;
   int colDroitePerso = 0;
   int colGauchePerso = 0;
+  int verifColHaut = 0;
   int verifColBas = 0;
+  int verifColGauche = 0;
+  int verifColDroite = 0;
   int hauteurArret = 0;
   int fin = 0;
   Rectangle * perso[nbPerso];
@@ -45,6 +48,9 @@ int main(int argc, char** argv) {
   obs[0] = createRectangle(10, 100, -50, -10, 0, 0, 0);
   obs[1] = createRectangle(10, 30, 30, 0, 0, 0, 0);
   obs[2] = createRectangle(10, 30, 0, 15, 0, 0, 0);
+  obs[3] = createRectangle(10, 30, 40, 10, 0, 0, 0);
+  obs[4] = createRectangle(5, 40, -80, 0, 0, 0, 0);
+
 
 
   int loop = 1;
@@ -75,6 +81,8 @@ int main(int argc, char** argv) {
     drawObstacle(obs[0]);
     drawObstacle(obs[1]);
     drawObstacle(obs[2]);
+    drawObstacle(obs[3]);
+    drawObstacle(obs[4]);
 
     glColor3ub(255,255,255);
     drawFinish(perso[0]);
@@ -88,7 +96,12 @@ int main(int argc, char** argv) {
 
     SDL_GL_SwapBuffers();
 
-    colBas = 0;
+    colBas = 0; //ne pas toucher
+
+    colHaut = 0;
+    colGauche = 0;
+    colDroite = 0;
+    colHaut = 0;
     float saut = perso[cmptPerso]->puissance;
 
     //////////////////////////////////////////
@@ -97,12 +110,24 @@ int main(int argc, char** argv) {
 
     for(int i=0; i < nbObs; i++){
       verifColBas = 0;
-      colGauche = collisionGauche(perso[cmptPerso], obs[i]);
-      colDroite = collisionDroite(perso[cmptPerso], obs[i]);
-      colHaut = collisionHaut(perso[cmptPerso], obs[i]);
+      verifColHaut = 0;
+      verifColGauche = 0;
+      verifColDroite = 0;
+      verifColGauche = collisionGauche(perso[cmptPerso], obs[i]);
+      verifColDroite = collisionDroite(perso[cmptPerso], obs[i]);
+      verifColHaut = collisionHaut(perso[cmptPerso], obs[i]);
       verifColBas = collisionBas(perso[cmptPerso], obs[i], &hauteurArret);
+      if(verifColGauche == 1){
+        colGauche = 1;
+      }
+      if(verifColDroite == 1){
+        colDroite = 1;
+      }
       if(verifColBas == 1){
         colBas = 1;
+      }
+      if(verifColHaut == 1){
+        colHaut = 1;
       }
     }
 
@@ -122,16 +147,16 @@ int main(int argc, char** argv) {
       }
     }
 
-    /* Saut */
+    /* Saut à revoir*/ 
     if (colBas == 1){
       perso[cmptPerso]->y = hauteurArret;
       saut = perso[cmptPerso]->puissance;
       accelerationChute = 0;
     }
     else{
-      gravite = 0.2;
-      if(accelerationChute < 10){
-        accelerationChute += 0.1;
+      gravite = 0.1;
+      if(accelerationChute < 4){
+        accelerationChute += 0.05;
       }
       perso[cmptPerso]->y -= gravite + accelerationChute ;
     }
@@ -150,6 +175,7 @@ int main(int argc, char** argv) {
       saut = 0;
     }
 
+
     /* Déplacement */
 
 
@@ -164,9 +190,9 @@ int main(int argc, char** argv) {
 
     if(rightPressed == 1){
       if (colDroite == 0 && colDroitePerso == 0) {
-        vitessex = 0.4;
-        if(acceleration < 0.6){
-          acceleration += 0.1;
+        vitessex = 0.2;
+        if(acceleration < 0.4){
+          acceleration += 0.05;
         }
         perso[cmptPerso]->x += (vitessex + acceleration);
       }
@@ -183,9 +209,9 @@ int main(int argc, char** argv) {
 
     if(leftPressed == 1){
       if (colGauche == 0 && colGauchePerso == 0) {
-      vitessex = 0.4;
-        if(acceleration < 0.6){
-          acceleration += 0.1;
+      vitessex = 0.2;
+        if(acceleration < 0.4){
+          acceleration += 0.05;
         }
       perso[cmptPerso]->x -= (vitessex + acceleration);
       }
@@ -246,8 +272,9 @@ int main(int argc, char** argv) {
               break;
 
             case SDLK_TAB :
+            if(colBas == 1){
               cmptPerso = (cmptPerso+1) % nbPerso;
-
+            }
             default : break;
           }
           break;
