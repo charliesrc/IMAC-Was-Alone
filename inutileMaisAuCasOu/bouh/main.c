@@ -7,7 +7,7 @@ unsigned int windowHeight = 600;
 int main(int argc, char** argv) {
 
   int nbPerso = 2;
-  int nbObs = 3;
+  int nbObs = 2;
   int cmptPerso = 0;
   int rightPressed = 0;
   int leftPressed = 0;
@@ -44,7 +44,6 @@ int main(int argc, char** argv) {
 
   obs[0] = createRectangle(10, 100, -50, -10, 0, 0, 0);
   obs[1] = createRectangle(10, 30, 30, 0, 0, 0, 0);
-  obs[2] = createRectangle(10, 30, 0, 15, 0, 0, 0);
 
 
   int loop = 1;
@@ -74,7 +73,6 @@ int main(int argc, char** argv) {
     glColor3ub(0,0,0);
     drawObstacle(obs[0]);
     drawObstacle(obs[1]);
-    drawObstacle(obs[2]);
 
     glColor3ub(255,255,255);
     drawFinish(perso[0]);
@@ -99,7 +97,6 @@ int main(int argc, char** argv) {
       verifColBas = 0;
       colGauche = collisionGauche(perso[cmptPerso], obs[i]);
       colDroite = collisionDroite(perso[cmptPerso], obs[i]);
-      colHaut = collisionHaut(perso[cmptPerso], obs[i]);
       verifColBas = collisionBas(perso[cmptPerso], obs[i], &hauteurArret);
       if(verifColBas == 1){
         colBas = 1;
@@ -144,10 +141,6 @@ int main(int argc, char** argv) {
           gravite = 0;
         }
         colBas = 0;
-    }
-    if(colHaut == 1){
-      upPressed = 0;
-      saut = 0;
     }
 
     /* Déplacement */

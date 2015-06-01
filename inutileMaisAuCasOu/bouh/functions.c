@@ -50,13 +50,14 @@ Rectangle * createRectangle(float hauteur, float largeur, float x, float y, floa
    return 0;
  }
 
-  int collisionHaut(Rectangle* perso, Rectangle* newObs){
 
-   if((perso->x + perso->largeur > newObs->x) && (perso->x < newObs->x + newObs->largeur) && (perso->y + perso->hauteur <= newObs->y) && (perso->y + perso->hauteur >= newObs->y - 2))
+ int collisionHaut(Rectangle* perso, Rectangle* newObs){
+
+   if(((perso->x + perso->largeur < newObs->x) || (perso->x > newObs->x + newObs->largeur)) && (perso->y + perso->hauteur < newObs->y))
    {
-     return 1;
+     return 0;
    }
-   return 0;
+   return 1;
  }
 
  /******************************************************************************
