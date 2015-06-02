@@ -1,11 +1,11 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_mixer.h>
 #ifdef __APPLE__
-  #include <OpenGL/gl.h>
-  #include <OpenGL/glu.h>
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
 #else
-  #include <GL/gl.h>
-  #include <GL/glu.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
 #endif
 #include <stdlib.h>
 #include <stdio.h>
@@ -30,13 +30,13 @@ suffit de le mettre dans le dossier et ça récupère tout!!
 /* 1- DEFINITION DE LA STRUCTURE */
 
 typedef struct Rectangle {
-  float hauteur;
-  float largeur;
-  float x;
-  float y;
-  float xfin;
-  float yfin;
-  float puissance;
+float hauteur;
+float largeur;
+float x;
+float y;
+float xfin;
+float yfin;
+float puissance;
 } Rectangle;
 
 
@@ -47,18 +47,20 @@ Rectangle * createRectangle(float hauteur, float largeur, float x, float y, floa
 
 /* 3- COLLISION */
 
- int collisionDroite(Rectangle* perso, Rectangle* newObs);
+int collisionDroite(Rectangle* perso, Rectangle* newObs);
 
- int collisionGauche(Rectangle* perso, Rectangle* newObs);
+int collisionGauche(Rectangle* perso, Rectangle* newObs);
 
- int collisionBas(Rectangle* perso, Rectangle* newObs, int *hauteurArret);
+int collisionBas(Rectangle* perso, Rectangle* newObs, int *hauteurArret);
 
- int collisionHaut(Rectangle* perso, Rectangle* newObs);
+int collisionHaut(Rectangle* perso, Rectangle* newObs);
 
 
- /* 4- DETECTION FIN DE NIVEAU */
+/* 4- DETECTION FIN DE NIVEAU */
 
- int arrive(Rectangle * perso);
+int arrive(Rectangle * perso);
+
+int finNiveau(Rectangle* perso[], int nbPerso, int fin[]);
 
 
 /* 5- FONCTIONS POUR DESSINER */
@@ -78,7 +80,10 @@ void reshape(int winWidth, int winHeight);
 void setVideoMode(int winWidth, int winHeight);
 
 
-/* 6- FONCTION POUR INITIALISER UN NIVEAU A PARTIR D'UN FICHIER */
+/* 6-FONCTION POUR DÉPLACER LA CAMÉRA */
+void mouvementCamera(Rectangle* perso, int windowWidth, int windowHeight, float* centreX, float* centreY);
+
+/* 7- FONCTION POUR INITIALISER UN NIVEAU A PARTIR D'UN FICHIER */
 
 
 

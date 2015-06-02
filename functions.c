@@ -52,7 +52,7 @@ Rectangle * createRectangle(float hauteur, float largeur, float x, float y, floa
 
   int collisionHaut(Rectangle* perso, Rectangle* newObs){
 
-   if((perso->x + perso->largeur > newObs->x) && (perso->x < newObs->x + newObs->largeur) && (perso->y + perso->hauteur >= newObs->y - 1) && (perso->y < newObs->y + newObs->hauteur))
+   if((perso->x + perso->largeur > newObs->x) && (perso->x < newObs->x + newObs->largeur) && (perso->y + perso->hauteur >= newObs->y - 1) && (perso->y < newObs->y + newObs->hauteur - 1))
    {
      return 1;
    }
@@ -68,13 +68,23 @@ Rectangle * createRectangle(float hauteur, float largeur, float x, float y, floa
    int end = 0;
 
    if((perso->x > perso->xfin) && (perso->x < perso->xfin + perso->largeur) && (perso->y == perso->yfin)){
-
      end = 1;
    }
    else{
      end = 0;
    }
    return end;
+ }
+
+ int finNiveau(Rectangle* perso[], int nbPerso, int fin[]){
+    int cpt = 0, i;
+
+    for(i = 0; i < nbPerso; i++){
+      if(fin[i]) cpt ++;
+    }
+    if(cpt == nbPerso) return 2;
+
+    return 0;
  }
 
 
@@ -164,5 +174,43 @@ void setVideoMode(int winWidth, int winHeight) {
 
 
 /******************************************************************************
- 5- FONCTION POUR INITIALISER UN NIVEAU A PARTIR D'UN FICHIER
+ 5- FONCTION POUR DÉPLACER LA CAMÉRA
+ ******************************************************************************/
+
+void mouvementCamera(Rectangle* perso, int windowWidth, int windowHeight, float* centreX, float* centreY){
+  float xRapport, yRapport;
+  float distanceCentreX, distanceCentreY, diffX, diffY;
+
+  if(perso){
+    diffX = (*centreX);
+    diffY = (*centreY);
+
+    distanceCentreX = perso->x - (*centreX);
+    distanceCentreY = perso->y - (*centreY);
+
+    xRapport = 0.01*windowWidth;
+    yRapport = 0.01*windowHeight;
+
+    if(distanceCentreX > xRapport){
+      (*centreX) += +1 * (distanceCentreX - xRapport) / 10;
+    }
+    else if (distanceCentreX < (-xRapport)){
+      (*centreX) -= -1 * (distanceCentreX + xRapport) / 10;
+    }
+
+    if(distanceCentreY > yRapport){
+      (*centreY) += +1 * (distanceCentreY - yRapport) / 10;
+    }
+    else if (distanceCentreY < (-yRapport)){
+      (*centreY) -= -1 * (distanceCentreY + yRapport) / 1;
+    }
+
+    glTranslatef(-(*centreX), -(*centreY), 0.0);
+
+  }
+}
+
+
+/******************************************************************************
+ 6- FONCTION POUR INITIALISER UN NIVEAU A PARTIR D'UN FICHIER
  ******************************************************************************/
