@@ -1,4 +1,5 @@
 #include <SDL/SDL.h>
+#include <SDL/SDL_image.h>
 #include <SDL/SDL_mixer.h>
 #ifdef __APPLE__
 #include <OpenGL/gl.h>
@@ -18,10 +19,10 @@ static const Uint32 FRAMERATE_MILLISECONDS = 1000 / 60;
 
 /*
 
-en gros ça permet de mettre tous tes fichiers .h dans un dossier "includes", 
-tous tes fichiers .c dans un dossier "src" et faut que tu créé un dossier "bin" 
-pour mettre tous tes fichiers .o dedans. Et c'est généré automatiquement, 
-plus besoin d'écrire un nouveau fichier (comme function.o) à chaque fois que tu en fais un, 
+en gros ça permet de mettre tous tes fichiers .h dans un dossier "includes",
+tous tes fichiers .c dans un dossier "src" et faut que tu créé un dossier "bin"
+pour mettre tous tes fichiers .o dedans. Et c'est généré automatiquement,
+plus besoin d'écrire un nouveau fichier (comme function.o) à chaque fois que tu en fais un,
 suffit de le mettre dans le dossier et ça récupère tout!!
 
 */
@@ -60,7 +61,7 @@ int collisionHaut(Rectangle* perso, Rectangle* newObs);
 
 int arrive(Rectangle * perso);
 
-int finNiveau(Rectangle* perso[], int nbPerso, int fin[]);
+int finNiveau(Rectangle* perso[], int nbPerso, int fin[], int menu);
 
 
 /* 5- FONCTIONS POUR DESSINER */
@@ -84,9 +85,3 @@ void setVideoMode(int winWidth, int winHeight);
 void mouvementCamera(Rectangle* perso, int windowWidth, int windowHeight, float* centreX, float* centreY);
 
 /* 7- FONCTION POUR INITIALISER UN NIVEAU A PARTIR D'UN FICHIER */
-
-
-
-
-
-

@@ -76,15 +76,20 @@ Rectangle * createRectangle(float hauteur, float largeur, float x, float y, floa
    return end;
  }
 
- int finNiveau(Rectangle* perso[], int nbPerso, int fin[]){
+ int finNiveau(Rectangle* perso[], int nbPerso, int fin[], int menu){
     int cpt = 0, i;
 
     for(i = 0; i < nbPerso; i++){
       if(fin[i]) cpt ++;
     }
-    if(cpt == nbPerso) return 2;
+    if(cpt == nbPerso){
+      menu = menu + 1;
+      if(menu > 3){
+        menu = 0;
+      }
+    }
 
-    return 0;
+    return menu;
  }
 
 

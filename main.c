@@ -1,15 +1,51 @@
 
 #include "functions.h"
+#include "menu.h"
+#include "level.h"
 
+#define  MAXPERSO 3
+#define  MAXOBS 30
 
 
 unsigned int windowWidth  = 800;
 unsigned int windowHeight = 600;
 
+
+
+
 int main(int argc, char** argv) {
 
-  int nbPerso = 2;
-  int nbObs = 6;
+  // Variables niveau 1
+  int nbPersoLvl1 = 2;
+  int nbObsLvl1 = 6;
+  Rectangle * perso1[nbPersoLvl1];
+  Rectangle * obs1[nbObsLvl1];
+
+  // Variables niveau 2
+  int nbPersoLvl2 = 3;
+  int nbObsLvl2 = 17;
+  Rectangle * perso2[nbPersoLvl2];
+  Rectangle * obs2[nbObsLvl2];
+
+  // Variable niveau 3
+  int nbPersoLvl3 = 3;
+  int nbObsLvl3 = 14;
+  Rectangle * perso3[nbPersoLvl3];
+  Rectangle * obs3[nbObsLvl3];
+
+  // Variable niveau actuel
+  int nbPerso;
+  int nbObs;
+  Rectangle * perso[MAXPERSO];
+  Rectangle * obs[MAXOBS];
+  int i;
+
+  // Variable menu
+  int enter = 0;
+  int menu = 0;
+  int selectLvl = 0;
+
+  // Variable physique
   int cmptPerso = 0;
   int rightPressed = 0;
   int leftPressed = 0;
@@ -25,14 +61,16 @@ int main(int argc, char** argv) {
   int colDroitePerso = 0;
   int colGauchePerso = 0;
   int colHautPerso = 0;
+  int verifColGauchePerso = 0;
+  int verifColDroitePerso = 0;
   int verifColHaut = 0;
   int verifColBas = 0;
   int verifColGauche = 0;
   int verifColDroite = 0;
   int verifColHautPerso = 0;
   int hauteurArret = 0;
-  Rectangle * perso[nbPerso];
-  Rectangle * obs[nbObs];
+
+
   float centerX = 0;
   float centerY = 0;
   int pause = 0;
@@ -48,23 +86,15 @@ int main(int argc, char** argv) {
   SDL_WM_SetCaption("IMAC Was Alone", NULL);
 
 
-  perso[0] = createRectangle(6, 2.5, 0, 2, 50, 20, 1.7);
-  perso[1] = createRectangle(3, 3, -4, 0, 10, 25, 1.3);
-
-
-  obs[0] = createRectangle(20, 160, -80, -20, 0, 0, 0);
-  obs[1] = createRectangle(10, 30, 30, 0, 0, 0, 0);
-  obs[2] = createRectangle(10, 40, -10, 15, 0, 0, 0);
-  obs[3] = createRectangle(10, 20, 40, 10, 0, 0, 0);
-
-
-  obs[4] = createRectangle(150, 50, -130, -30, 0, 0, 0);
-  obs[5] = createRectangle(150, 50, 80, -30, 0, 0, 0);
-
 
 
   int loop = 1;
   while(loop) {
+
+    printf("menu : %d\n", menu);
+    printf("enter : %d\n", enter);
+
+
 
     /* temps au début de la boucle */
     Uint32 startTime = SDL_GetTicks();
@@ -76,6 +106,145 @@ int main(int argc, char** argv) {
 
     glLoadIdentity();
 
+    if (menu == 0) {
+
+      // Création des niveaux
+      createLvl1(perso1, obs1);
+      createLvl2(perso2, obs2);
+      createLvl3(perso3, obs3);
+
+        for (i = 0;  i< MAXPERSO; i++) {
+          perso[i] = 0;
+        }
+
+        if(enter == 0){
+          afficherMenu(selectLvl);
+          printf("selectLvl : %d\n", selectLvl);
+
+        }
+        else {
+          menu = selectLvl + 1;
+          printf("menu : %d\n", menu);
+
+          printf("selectLvl : %d\n", selectLvl);
+
+          enter = 0;
+        }
+      }
+
+      if (menu == 1) {
+        //NIVEAU 1
+
+        printf("niveau 1 \n");
+        nbPerso = nbPersoLvl1;
+        nbObs = nbObsLvl1;
+
+        printf("nbPerso : %d\n", nbPerso);
+        printf("nbObs : %d\n", nbObs);
+
+        mouvementCamera(perso1[cmptPerso], windowWidth, windowHeight, &centerX, &centerY);
+
+
+        glColor3ub(34, 70, 255); // BLEU
+        drawPersonnage(perso1[0]);
+        glColor3ub(243, 44, 73); //ROUGE
+        drawPersonnage(perso1[1]);
+
+        glColor3ub(0,0,0);
+        drawObstacle(obs1[0]);
+        drawObstacle(obs1[1]);
+        drawObstacle(obs1[2]);
+        drawObstacle(obs1[3]);
+        drawObstacle(obs1[4]);
+        drawObstacle(obs1[5]);
+
+        glColor3ub(255,255,255);
+        drawFinish(perso1[0]);
+        drawFinish(perso1[1]);
+
+        for(i = 0; i< nbPerso; i++){
+          perso[i] = perso1[i];
+        }
+        for(i = 0; i< nbObs; i++){
+          obs[i] = obs1[i];
+        }
+      }
+
+      if(menu == 2){
+        //Niveau 2
+        printf("niveau 2 \n");
+        nbPerso = nbPersoLvl2;
+        nbObs = nbObsLvl2;
+        printf("nbPerso %d\n", nbPerso);
+        printf("cmptPerso %d\n", cmptPerso);
+
+        mouvementCamera(perso2[cmptPerso], windowWidth, windowHeight, &centerX, &centerY);
+
+
+        glColor3ub(237, 255, 113); //JAUNE
+        drawPersonnage(perso2[0]);
+        glColor3ub(34, 70, 255); // BLEU
+        drawPersonnage(perso2[1]);
+        glColor3ub(243, 44, 73); //ROUGE
+        drawPersonnage(perso2[2]);
+
+        glColor3ub(0,0,0);
+        for(i = 0; i < nbObs; i++){
+          drawObstacle(obs2[i]);
+        }
+
+        glColor3ub(255,255,255);
+        drawFinish(perso2[0]);
+        drawFinish(perso2[1]);
+        drawFinish(perso2[2]);
+
+        for(i = 0; i < nbPerso; i++){
+          perso[i] = perso2[i];
+        }
+        for(i = 0; i < nbObs; i++){
+          obs[i] = obs2[i];
+        }
+
+      }
+
+      if(menu == 3){
+        //Niveau 3
+        printf("niveau 3 \n");
+        nbPerso = nbPersoLvl3;
+        nbObs = nbObsLvl3;
+
+        mouvementCamera(perso3[cmptPerso], windowWidth, windowHeight, &centerX, &centerY);
+
+        glColor3ub(237, 255, 113); //JAUNE
+        drawPersonnage(perso3[0]);
+        glColor3ub(34, 70, 255); // BLEU
+        drawPersonnage(perso3[1]);
+        glColor3ub(243, 44, 73); //ROUGE
+        drawPersonnage(perso3[2]);
+
+        glColor3ub(0,0,0);
+        for(i = 0; i < nbObs; i++){
+          drawObstacle(obs3[i]);
+        }
+
+        glColor3ub(255,255,255);
+        drawFinish(perso3[0]);
+        drawFinish(perso3[1]);
+        drawFinish(perso3[2]);
+
+        for(i = 0; i< nbPerso; i++){
+          perso[i] = perso3[i];
+        }
+        for(i = 0; i< nbObs; i++){
+          obs[i] = obs3[i];
+        }
+
+        printf("nbPerso : %d\n", nbPerso);
+        printf("nbObs : %d\n", nbObs);
+      }
+
+
+
     if (pause == 1) {
       /* Afficher le menu de pause -> un rectangle avec une texture "pause"*/
       printf("Pause\n");
@@ -85,28 +254,7 @@ int main(int argc, char** argv) {
       printf("FIN\n");
     }
     else {
-      mouvementCamera(perso[cmptPerso], windowWidth, windowHeight, &centerX, &centerY);
-
-      drawRepere();
-
-      //printf("drawRepere ok\n");
-
-      glColor3ub(50, 0, 205);
-      drawPersonnage(perso[0]);
-      glColor3ub(128, 50, 128);
-      drawPersonnage(perso[1]);
-
-      glColor3ub(0,0,0);
-      drawObstacle(obs[0]);
-      drawObstacle(obs[1]);
-      drawObstacle(obs[2]);
-      drawObstacle(obs[3]);
-      drawObstacle(obs[4]);
-      drawObstacle(obs[5]);
-
-      glColor3ub(255,255,255);
-      drawFinish(perso[0]);
-      drawFinish(perso[1]);
+      if(menu != 0){
 
       drawFleche(perso[cmptPerso]);
 
@@ -122,13 +270,15 @@ int main(int argc, char** argv) {
       colGauche = 0;
       colDroite = 0;
       colHautPerso = 0;
+      colGauchePerso = 0;
+      colDroitePerso = 0;
       float saut = perso[cmptPerso]->puissance;
 
       //////////////////////////////////////////
       // COLLISIONS ENTRE PERSOS ET OBSTACLES //
       //////////////////////////////////////////
 
-      for(int i=0; i < nbObs; i++){
+      for(i=0; i < nbObs; i++){
         verifColBas = 0;
         verifColHaut = 0;
         verifColGauche = 0;
@@ -155,12 +305,20 @@ int main(int argc, char** argv) {
       //////// COLLISIONS ENTRE PERSOS  ////////
       //////////////////////////////////////////
 
-      for(int i = 0; i < nbPerso; i++){
+      for(i = 0; i < nbPerso; i++){
         verifColBas = 0;
         verifColHautPerso = 0;
+        verifColGauchePerso = 0;
+        verifColDroitePerso = 0;
         if (i != cmptPerso) {
-          colGauchePerso = collisionGauche(perso[cmptPerso], perso[i]);
-          colDroitePerso = collisionDroite(perso[cmptPerso], perso[i]);
+          verifColGauchePerso = collisionGauche(perso[cmptPerso], perso[i]);
+          if(verifColGauchePerso == 1){
+            colGauchePerso = 1;
+          }
+          verifColDroitePerso = collisionDroite(perso[cmptPerso], perso[i]);
+          if(verifColDroitePerso == 1){
+            colDroitePerso = 1;
+          }
           verifColHautPerso = collisionHaut(perso[cmptPerso], perso[i]);
           if(verifColHautPerso == 1){
             colHautPerso = 1;
@@ -172,7 +330,7 @@ int main(int argc, char** argv) {
         }
       }
 
-      /* Saut à revoir*/ 
+      /* Saut à revoir*/
       if (colBas == 1){
         perso[cmptPerso]->y = hauteurArret;
         saut = perso[cmptPerso]->puissance;
@@ -215,12 +373,12 @@ int main(int argc, char** argv) {
 
       printf("colHautPerso : %d\n", colHautPerso);
       printf("verifColHautPerso : %d\n", verifColHautPerso);
-      /*printf("colBas : %d\n", colBas);
+      printf("colBas : %d\n", colBas);
       printf("colDroite : %d\n", colDroite);
       printf("colGauche : %d\n", colGauche);
-      printf("upPressed : %d\n", upPressed);
+      //printf("upPressed : %d\n", upPressed);
       printf("verifColBas : %d\n", verifColBas);
-      printf("cmptPerso : %d\n", cmptPerso);*/
+      //printf("cmptPerso : %d\n", cmptPerso);
 
 
 
@@ -266,17 +424,16 @@ int main(int argc, char** argv) {
 
 
       /*Détection de la fin :*/
-
       fin[cmptPerso] = arrive(perso[cmptPerso]);
-      pause = finNiveau(perso, nbPerso, fin);
+      menu = finNiveau(perso, nbPerso, fin, menu);
 
       /*Si un personnage tombe :*/
       if(perso[cmptPerso]->y < -200){
         printf("GAME OVER\n");
-        pause = 2;
+        menu = 0;
       }
     }
-
+  }
     SDL_Event e;
     while(SDL_PollEvent(&e)) {
       if(e.type == SDL_QUIT) {
@@ -299,13 +456,17 @@ int main(int argc, char** argv) {
             case SDLK_RIGHT :
               rightPressed = 0;
               acceleration = 0;
-
+              if(selectLvl < 2){
+                selectLvl = (selectLvl + 1) % 3;
+              }
               break;
 
             case SDLK_LEFT :
               leftPressed = 0;
               acceleration = 0;
-
+              if(selectLvl > 0){
+                selectLvl = (selectLvl - 1) % 3;
+              }
               break;
 
             case SDLK_SPACE :
@@ -315,12 +476,22 @@ int main(int argc, char** argv) {
             case 'p' :
               if(pause == 0) pause = 1;
               else pause = 0;
-              break;              
+              break;
+
+            case 'm' :
+              menu = 0;
+              break;
 
             case SDLK_TAB :
-            if(colBas == 1){
-              cmptPerso = (cmptPerso+1) % nbPerso;
-            }
+              if(colBas == 1){
+                cmptPerso = (cmptPerso + 1) % nbPerso;
+              }
+              break;
+
+            case SDLK_RETURN :
+              enter = 1;
+              break;
+
             default : break;
           }
           break;
