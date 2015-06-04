@@ -158,6 +158,7 @@ void drawFleche(Rectangle * perso){
 
 }
 
+
 void reshape(int winWidth, int winHeight) {
   glViewport(0, 0, winWidth, winHeight);
   glMatrixMode(GL_PROJECTION);
@@ -174,8 +175,134 @@ void setVideoMode(int winWidth, int winHeight) {
   reshape(winWidth,winHeight);
   glClear(GL_COLOR_BUFFER_BIT);
   glClearColor(0.2, 0.5, 0.5, 1);
-  SDL_GL_SwapBuffers();
 }
+
+int drawNumberLevel(int level){
+
+    SDL_Surface* image;
+
+    switch (level) {
+      case 1:
+      image = IMG_Load("level1.png");
+      break;
+
+      case 2:
+      image = IMG_Load("level2.png");
+      break;
+
+      case 3:
+      image = IMG_Load("level3.png");
+      break;
+
+      default: break;
+    }
+
+
+    if(image == NULL) {
+        fprintf(stderr, "Impossible de charger l'image \n");
+        return EXIT_FAILURE;
+    }
+
+
+    GLuint textureId;
+    glGenTextures(1, &textureId);
+    glBindTexture(GL_TEXTURE_2D, textureId);
+    glEnable(GL_BLEND);
+          //la couleur de l'objet va être (1-alpha_de_l_objet) * couleur du fond et (le_reste * couleur originale)
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->w, image->h, 0, GL_BGRA, GL_UNSIGNED_BYTE, image->pixels);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    SDL_FreeSurface(image);
+
+    //glClear(GL_COLOR_BUFFER_BIT);
+
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, textureId);
+
+    glBegin(GL_QUADS);
+
+    glColor3f(1, 1, 1);
+
+    glTexCoord2f(0, 1);
+    glVertex2f(-40, -15);
+
+    glTexCoord2f(1, 1);
+    glVertex2f(40, -15);
+
+    glTexCoord2f(1, 0);
+    glVertex2f(40, 45);
+
+    glTexCoord2f(0, 0);
+    glVertex2f(-40, 45);
+    glEnd();
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    glDisable(GL_TEXTURE_2D);
+
+    return 0;
+  }
+
+int drawPause(){
+
+      SDL_Surface* image = image = IMG_Load("pause.png");
+
+      if(image == NULL) {
+          fprintf(stderr, "Impossible de charger l'image \n");
+          return EXIT_FAILURE;
+      }
+
+
+      GLuint textureId;
+      glGenTextures(1, &textureId);
+      glBindTexture(GL_TEXTURE_2D, textureId);
+      glEnable(GL_BLEND);
+            //la couleur de l'objet va être (1-alpha_de_l_objet) * couleur du fond et (le_reste * couleur originale)
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->w, image->h, 0, GL_BGRA, GL_UNSIGNED_BYTE, image->pixels);
+
+      glBindTexture(GL_TEXTURE_2D, 0);
+
+      SDL_FreeSurface(image);
+
+      //glClear(GL_COLOR_BUFFER_BIT);
+
+      glEnable(GL_TEXTURE_2D);
+      glBindTexture(GL_TEXTURE_2D, textureId);
+
+      glBegin(GL_QUADS);
+
+      glColor3f(1, 1, 1);
+
+      glTexCoord2f(0, 1);
+      glVertex2f(-40, -15);
+
+      glTexCoord2f(1, 1);
+      glVertex2f(40, -15);
+
+      glTexCoord2f(1, 0);
+      glVertex2f(40, 45);
+
+      glTexCoord2f(0, 0);
+      glVertex2f(-40, 45);
+      glEnd();
+
+      glBindTexture(GL_TEXTURE_2D, 0);
+
+      glDisable(GL_TEXTURE_2D);
+
+      return 0;
+    }
+
+
 
 
 /******************************************************************************

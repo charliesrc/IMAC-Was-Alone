@@ -68,6 +68,10 @@ int finNiveau(Rectangle* perso[], int nbPerso, int fin[], int menu);
 
 void drawRepere();
 
+int drawPause();
+
+int drawNumberLevel(int level);
+
 void drawPersonnage(Rectangle * perso);
 
 void drawFinish(Rectangle * perso);

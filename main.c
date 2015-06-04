@@ -86,14 +86,11 @@ int main(int argc, char** argv) {
   SDL_WM_SetCaption("IMAC Was Alone", NULL);
 
 
-
-
   int loop = 1;
   while(loop) {
 
     printf("menu : %d\n", menu);
     printf("enter : %d\n", enter);
-
 
 
     /* temps au début de la boucle */
@@ -112,6 +109,8 @@ int main(int argc, char** argv) {
       createLvl1(perso1, obs1);
       createLvl2(perso2, obs2);
       createLvl3(perso3, obs3);
+      
+      pause = 0;
 
         for (i = 0;  i< MAXPERSO; i++) {
           perso[i] = 0;
@@ -134,6 +133,8 @@ int main(int argc, char** argv) {
 
       if (menu == 1) {
         //NIVEAU 1
+        drawNumberLevel(menu);
+
 
         printf("niveau 1 \n");
         nbPerso = nbPersoLvl1;
@@ -173,13 +174,15 @@ int main(int argc, char** argv) {
       if(menu == 2){
         //Niveau 2
         printf("niveau 2 \n");
+
+        drawNumberLevel(menu);
+
         nbPerso = nbPersoLvl2;
         nbObs = nbObsLvl2;
         printf("nbPerso %d\n", nbPerso);
         printf("cmptPerso %d\n", cmptPerso);
 
         mouvementCamera(perso2[cmptPerso], windowWidth, windowHeight, &centerX, &centerY);
-
 
         glColor3ub(237, 255, 113); //JAUNE
         drawPersonnage(perso2[0]);
@@ -210,6 +213,9 @@ int main(int argc, char** argv) {
       if(menu == 3){
         //Niveau 3
         printf("niveau 3 \n");
+
+        drawNumberLevel(menu);
+
         nbPerso = nbPersoLvl3;
         nbObs = nbObsLvl3;
 
@@ -247,7 +253,13 @@ int main(int argc, char** argv) {
 
     if (pause == 1) {
       /* Afficher le menu de pause -> un rectangle avec une texture "pause"*/
-      printf("Pause\n");
+      centerX = 5;
+      centerY = -10;
+      mouvementCamera(perso2[cmptPerso], windowWidth, windowHeight, &centerX, &centerY);
+
+      drawPause();
+      SDL_GL_SwapBuffers();
+
     }
     else if (pause == 2) {
       /*Afficher la fin*/
@@ -429,7 +441,6 @@ int main(int argc, char** argv) {
 
       /*Si un personnage tombe :*/
       if(perso[cmptPerso]->y < -200){
-        printf("GAME OVER\n");
         menu = 0;
       }
     }
