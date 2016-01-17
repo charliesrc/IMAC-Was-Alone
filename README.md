@@ -26,6 +26,13 @@ Project realised in IMAC Engineering School, in May 2015
 #### Run
 
 	./main
+
+#### Play
+
+	Choose the level with ← →
+	Press ↵ to start
+	Move with ↑ ↓ ← →
+	Change block with ⇥
 	
 ###You need some libs
 
